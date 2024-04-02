@@ -10,19 +10,19 @@
           <booleanComponent
             v-if="question.questionType === 'BOOLEAN'"
             :question="question"
-            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0"
+            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn"
           />
           <generalComponent
             v-else-if="question.questionType === 'GENERAL'"
             :question="question"
-            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0"
+            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn"
           />
           <checkboxComponent
             v-else
             :question="question"
             :choices="getChoices(question)"
             :color="'D6EEFF'"
-            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0"
+            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn"
           />
         </div>
       </div>
@@ -52,7 +52,7 @@
           Once you submit, you will still be able to make changes to your survey before the due date. Once your guidance
           counselor finalizes your survey, you will not be able to edit.
         </p>
-        <p v-else class="mb-4 text-center text-red-500">Please answer all questions before submitting.</p>
+        <p v-else class="mb-4 text-center text-red-500">Please answer all required questions before submitting.</p>
         <button
           @click="submit()"
           class="bg-[#D6EEFF] shadow-[2px_3px_2px_rgba(0,0,0,0.25)] w-36 h-12 text-2xl font-bold text-[#37394F]"
@@ -99,7 +99,15 @@ const getChoices = (question: surveyQuestion) => {
   return classes.filter((x) => x.subject === question.questionType);
 };
 
+const shouldWarn = ref(false);
+
 const submit = async () => {
+  if (surveyStore.missingAnswers.length > 0) {
+    alert("Please answer all required questions before submitting.");
+    surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
+    shouldWarn.value = true;
+    return;
+  }
   if (userStore.userType === "student") {
     await surveyStore.saveSurvey();
     router.push("/student/dashboard");
