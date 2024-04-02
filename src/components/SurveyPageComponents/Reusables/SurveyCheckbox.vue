@@ -104,7 +104,7 @@ function startQuestion() {
   //if question does not currently exist in currentResponse, create it
   if (index.value < 0) {
     const newQuestion = {
-      id: "",
+      id: props.question.id,
       question: currentQuestion,
       questionType: props.question.questionType,
       answer: {

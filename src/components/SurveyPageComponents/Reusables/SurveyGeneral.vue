@@ -56,8 +56,7 @@ function startQuestion() {
   index.value = getQuestionIndex(currentQuestion);
   if (index.value < 0) {
     const newQuestion = {
-      //id does not exist for questions on backend yet
-      id: "",
+      id: props.question.id,
       question: currentQuestion,
       questionType: "GENERAL",
       answer: "",
