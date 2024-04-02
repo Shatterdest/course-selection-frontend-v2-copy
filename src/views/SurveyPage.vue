@@ -1,6 +1,6 @@
 <template>
   <div class="h-[80vh] flex flex-col justify-center items-center space-y-8">
-    <p v-if="surveyStore.loading"> Please stand by...</p>
+    <p v-if="surveyStore.loading">Setting things up...</p>
     <div v-else class="w-11/12 md:w-4/5 lg:w-3/4 flex flex-col items-center min-h-[20rem] h-5/6 overflow mt-6">
       <div class="mt-5">
         <h1 class="text-4xl font-semibold mb-6">

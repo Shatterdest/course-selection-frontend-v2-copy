@@ -11,7 +11,7 @@
         <h2 v-if="studentSurvey.grade === 'SENIOR'">Grade : 12</h2>
       </div>
 
-      <p v-if="surveyStore.loading">Please stand by...</p>
+      <p v-if="surveyStore.loading">Setting things up...</p>
       <div v-else>
         <div
           v-for="question in surveyStore.currentSurvey.question"
@@ -71,7 +71,7 @@
             disabled
             class="block py-2 px-3 mt-3 w-full md:w-3/5 text-base bg-transparent rounded-md border border-solid border-zinc-400 focus:outline-none focus:ring-0 focus:border-blue-400 disabled:bg-gray-100"
             type="text"
-            v-model="surveyStore.currentResponse[indexNoteGuidance].answer"
+            v-model="surveyStore.currentResponse[indexNote].answer"
           />
         </div>
         <div class="my-10">
