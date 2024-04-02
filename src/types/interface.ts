@@ -248,6 +248,8 @@ export type status = "COMPLETE" | "INCOMPLETE" | "FINALIZED" | null | undefined;
 export type question_type =
   | "BOOLEAN"
   | "GENERAL"
+  | "CHECKBOX"
+  | "DROPDOWN"
   | "MATH"
   | "ENGLISH"
   | "LANG"
