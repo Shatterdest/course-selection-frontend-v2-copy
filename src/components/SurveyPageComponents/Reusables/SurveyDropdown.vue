@@ -35,7 +35,6 @@ const getQuestionIndex = (question: string): number => {
 
 function startQuestion() {
   const currentQuestion: string = props.question.question;
-  console.log(props.question);
   index.value = getQuestionIndex(currentQuestion);
   if (index.value < 0) {
     const newQuestion = {

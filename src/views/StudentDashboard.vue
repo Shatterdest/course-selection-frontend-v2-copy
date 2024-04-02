@@ -78,7 +78,6 @@
     </div>
     
   </div>
-  <surveyDropdown/>
 </template>
 
 <script setup lang="ts">
