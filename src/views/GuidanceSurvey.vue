@@ -41,6 +41,11 @@
               :question="question"
             >
             </generalComponent>
+            <dropdownComponent
+            v-else-if="question.questionType === 'DROPDOWN'"
+            :question="question"
+            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn"
+          />
             <checkboxComponent
               v-else
               class="mb-6"
@@ -71,7 +76,7 @@
             disabled
             class="block py-2 px-3 mt-3 w-full md:w-3/5 text-base bg-transparent rounded-md border border-solid border-zinc-400 focus:outline-none focus:ring-0 focus:border-blue-400 disabled:bg-gray-100"
             type="text"
-            v-model="surveyStore.currentResponse[indexNote].answer"
+            v-model="surveyStore.currentResponse[indexNoteGuidance].answer"
           />
         </div>
         <div class="my-10">
@@ -84,7 +89,6 @@
             v-model="surveyStore.currentResponse[indexGuidanceFinalNote].answer"
           />
         </div>
-        -->
       </div>
 
       <div class="flex justify-center mb-10 flex-col items-center">
@@ -117,6 +121,7 @@ import { useSurveyStore } from "../stores/survey";
 import booleanComponent from "../components/SurveyPageComponents/Reusables/SurveyBoolean.vue";
 import generalComponent from "../components/SurveyPageComponents/Reusables/SurveyGeneral.vue";
 import checkboxComponent from "../components/SurveyPageComponents/Reusables/SurveyCheckbox.vue";
+import dropdownComponent from "../components/SurveyPageComponents/Reusables/SurveyDropdown.vue";
 import surveyDraggable from "../components/SurveyPageComponents/Reusables/SurveyDraggable.vue";
 import exclamationMark from "../components/icons/ExclamationMark.vue";
 import ScrollPage from "../components/SurveyPageComponents/Reusables/ScrollPage.vue";

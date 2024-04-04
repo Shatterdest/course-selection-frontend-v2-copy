@@ -17,6 +17,11 @@
             :question="question"
             :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn"
           />
+          <dropdownComponent
+            v-else-if="question.questionType === 'DROPDOWN'"
+            :question="question"
+            :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn"
+          />
           <checkboxComponent
             v-else
             :question="question"
