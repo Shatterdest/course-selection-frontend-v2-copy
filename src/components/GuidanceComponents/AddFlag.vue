@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="fixed top-0 left-0 z-100 w-full h-full bg-black/40 flex justify-center items-center"
-  >
-    <div
-      class="h-1/3 w-1/4 bg-white rounded-sm px-10 py-2 flex justify-evenly flex-col"
-    >
+  <div class="fixed top-0 left-0 z-100 w-full h-full bg-black/40 flex justify-center items-center">
+    <div class="h-1/3 w-1/4 bg-white rounded-sm px-10 py-2 flex justify-evenly flex-col">
       <div class="flex">
         <p><b>Student:</b> {{ titleCaseName(student.name) }}</p>
       </div>
@@ -66,21 +62,20 @@ const unaddedFlags: Ref<flag[]> = computed(() => {
 });
 
 const confirm = async (flag: string) => {
-  await userStore.addFlag(
-    `${props.student.email}@nycstudents.net`,
-    flag,
-    props.viewAll
-  );
+  await userStore.addFlag(`${props.student.email}@nycstudents.net`, flag, props.viewAll);
   emit("exit");
 };
 
 function titleCaseName(name: string): string {
-  const titleCaseWord = (word: string): string => {
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-  };
-  const [lastName, firstName] = name.split(",", 2);
-  const titleCasedLastName = lastName.split(" ").map(titleCaseWord).join(" ");
-  const titleCasedFirstName = firstName.split(" ").map(titleCaseWord).join(" ");
-  return `${titleCasedLastName}, ${titleCasedFirstName}`;
+  return name
+    .split(",")
+    .map((chunk) =>
+      chunk
+        .split(" ")
+        .map((part) => part.trim().toLowerCase())
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ")
+    )
+    .join(", ");
 }
 </script>
