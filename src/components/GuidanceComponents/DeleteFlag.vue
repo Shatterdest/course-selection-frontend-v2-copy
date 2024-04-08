@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="fixed top-0 left-0 z-100 w-full h-full bg-black/40 flex justify-center items-center"
-  >
-    <div
-      class="h-1/3 w-1/4 bg-white rounded-sm px-10 py-2 flex justify-evenly flex-col"
-    >
+  <div class="fixed top-0 left-0 z-100 w-full h-full bg-black/40 flex justify-center items-center">
+    <div class="h-1/3 w-1/4 bg-white rounded-sm px-10 py-2 flex justify-evenly flex-col">
       <div class="flex">
         <p><b>Student:</b> {{ titleCase(student.name) }}</p>
       </div>
@@ -68,16 +64,17 @@ const addedFlags: Ref<flag[]> = computed(() => {
 function titleCase(string: string): string {
   return string
     .split(",")
-    .map((part) => part.trim().toLowerCase())
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .map((chunk) =>
+      chunk
+        .split(" ")
+        .map((part) => part.trim().toLowerCase())
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ")
+    )
     .join(", ");
 }
 const confirm = async (flag: string) => {
-  await userStore.deleteFlag(
-    `${props.student.email}@nycstudents.net`,
-    flag,
-    props.viewAll
-  );
+  await userStore.deleteFlag(`${props.student.email}@nycstudents.net`, flag, props.viewAll);
   emit("exit");
 };
 </script>

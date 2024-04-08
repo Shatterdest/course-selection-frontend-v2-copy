@@ -1,9 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div
-      id="printPage"
-      class="flex w-[40vw] m-4 p-2 border border-gray-500 rounded-md"
-    >
+    <div id="printPage" class="flex w-[40vw] m-4 p-2 border border-gray-500 rounded-md">
       <div class="p-4">
         <div class="overflow-y-auto max-h-100">
           <ul class="my-4">
@@ -11,8 +8,7 @@
             <br />
             <p v-if="meetingTime && meetingDate">
               Your guidance counselor has scheduled a meeting with you for
-              {{ meetingTime }} on {{ meetingDate }}. Please meet with them
-              during the specified time.
+              {{ meetingTime }} on {{ meetingDate }}. Please meet with them during the specified time.
             </p>
             <br />
             <p v-if="meetingDescription">
@@ -24,9 +20,7 @@
         </div>
       </div>
     </div>
-    <div
-      class="item submit ml-4 mb-6 xl:text-2xl transition duration-300 hover:opacity-50 cursor-pointer w-fit"
-    >
+    <div class="item submit ml-4 mb-6 xl:text-2xl transition duration-300 hover:opacity-50 cursor-pointer w-fit">
       <button
         class="flex flex-row items-center font-bold text-[1.2rem] bg-[#e5e7be] px-4 py-2 rounded-lg w-fit h-fit"
         type="submit"
@@ -65,20 +59,24 @@ async function fetchStudentInfo() {
       Authorization: `Bearer ${access_token}`,
     };
     //GET request for meetings
-    const meetingsResponse = await fetch(
-      `${import.meta.env.VITE_URL}/guidance/meetings`,
-      {
-        method: "GET",
-        headers: headers,
-      }
-    );
+    const meetingsResponse = await fetch(`${import.meta.env.VITE_URL}/guidance/meetings`, {
+      method: "GET",
+      headers: headers,
+    });
     const meetingsData = (await meetingsResponse.json()).map((student: studentMeetings) => ({
       name: student.name
         .split(",")
-        .map((part) => part.trim().toLowerCase())
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .map((chunk) =>
+          chunk
+            .split(" ")
+            .map((part) => part.trim().toLowerCase())
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(" ")
+        )
         .reverse()
-        .join(" "),
+        .join(" ")
+        .replace(",", "")
+        .trim(),
       meetingDate: student.meetingDate,
       description: student.description,
       grade: student.grade,
@@ -110,9 +108,9 @@ onMounted(async () => {
 
 const printMeetingTicket = () => {
   const printElement = document.getElementById("printPage");
-  if(!printElement) {
+  if (!printElement) {
     console.error("Elemented with ID printPage not found.");
-    return
+    return;
   }
   const partPrint = printElement.innerHTML;
 
@@ -129,9 +127,9 @@ const printMeetingTicket = () => {
   `;
 
   const newWindow = window.open("", "", "width=800,height=900");
-  if(!newWindow) {
+  if (!newWindow) {
     console.error("Failed to open new window. Popup blocker might be enabled.");
-    return
+    return;
   }
   newWindow.document.write(printPage);
   newWindow.print();

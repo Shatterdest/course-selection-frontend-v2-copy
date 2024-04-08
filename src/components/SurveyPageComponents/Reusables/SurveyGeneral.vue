@@ -21,7 +21,6 @@
               v-if="warn"
             >
               <exclamationMark />
-              <p class="text-lg" :id="question.id+'required'">This question is required.</p>
             </div>
           </Transition>
         </div>
