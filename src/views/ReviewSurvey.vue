@@ -77,6 +77,7 @@ import booleanComponent from "../components/SurveyPageComponents/Reusables/Surve
 import generalComponent from "../components/SurveyPageComponents/Reusables/SurveyGeneral.vue";
 import checkboxComponent from "../components/SurveyPageComponents/Reusables/SurveyCheckbox.vue";
 import surveyDraggable from "../components/SurveyPageComponents/Reusables/SurveyDraggable.vue";
+import dropdownComponent from "../components/SurveyPageComponents/Reusables/SurveyDropdown.vue";
 import ScrollPage from "../components/SurveyPageComponents/Reusables/ScrollPage.vue";
 import { allCoursesAnswer, surveyQuestion } from "../types/interface";
 import { watch, ref, Ref } from "vue";

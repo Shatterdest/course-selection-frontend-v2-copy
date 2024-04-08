@@ -36,7 +36,7 @@
       </div>
       <div
         class="mt-4 border border-solid rounded-xl lg:w-[45%] w-[90%] lg:ml-14 lg:h-[50vh] md:mt-[1%] relative self-center lg:self-auto lg:overflow-y-auto transition-colors duration-200 ease-linear flex flex-col justify-between"
-        :class="warn ? 'border-red-400 bg-red-50' : 'border-black'"
+        :class="warn ? 'border-red-400 bg-[#FEE2E2]' : 'border-black'"
       >
       <div>
         <div class="flex justify-center mt-[1%]">
@@ -60,7 +60,6 @@
             v-if="warn"
           >
             <exclamationMark />
-            <p class="text-lg" :id="question.id+'required'">This question is required.</p>
           </div>
         </Transition>
       </div>

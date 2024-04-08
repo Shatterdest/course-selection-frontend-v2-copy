@@ -8,17 +8,25 @@
         </h1>
       </div>
       <div class="h-5/6 flex items-center">
-          <generalComponent v-if="currentQuestion.questionType === 'GENERAL'" :question="currentQuestion"
-          :key="currentQuestion.id + '-general'"></generalComponent>
-        
-          <booleanComponent v-else-if="currentQuestion.questionType === 'BOOLEAN'" :question="currentQuestion"
-          :key="currentQuestion.id + '-boolean'"></booleanComponent>
-        
-          <dropdownComponent v-else-if="currentQuestion.questionType === 'DROPDOWN'" :question="currentQuestion"
-          :key="currentQuestion.question + '-dropdown'"></dropdownComponent>
-        
-          <checkboxComponent v-else :question="currentQuestion" :choices="getChoices()" 
-          :key="currentQuestion.question + '-checkbox'" :color="'D6EEFF'"></checkboxComponent>
+        <generalComponent v-if="currentQuestion.questionType === 'GENERAL'" :question="currentQuestion"
+          :key="currentQuestion.id + '-general'"
+          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+        </generalComponent>
+
+        <booleanComponent v-else-if="currentQuestion.questionType === 'BOOLEAN'" :question="currentQuestion"
+          :key="currentQuestion.id + '-boolean'"
+          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+        </booleanComponent>
+
+        <dropdownComponent v-else-if="currentQuestion.questionType === 'DROPDOWN'" :question="currentQuestion"
+          :key="currentQuestion.question + '-dropdown'"
+          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+        </dropdownComponent>
+
+        <checkboxComponent v-else :question="currentQuestion" :choices="getChoices()"
+          :key="currentQuestion.question + '-checkbox'" :color="'D6EEFF'"
+          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+        </checkboxComponent>
       </div>
     </div>
     <div class="h-1/6 w-11/12 md:w-4/5 lg:w-3/4 flex justify-between items-start px-4">
@@ -43,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-//@ts-nocheck
 import checkboxComponent from "../components/SurveyPageComponents/Reusables/SurveyCheckbox.vue";
 import booleanComponent from "../components/SurveyPageComponents/Reusables/SurveyBoolean.vue";
 import generalComponent from "../components/SurveyPageComponents/Reusables/SurveyGeneral.vue";
