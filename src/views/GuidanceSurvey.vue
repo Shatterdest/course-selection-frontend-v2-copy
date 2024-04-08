@@ -12,68 +12,51 @@
       <p v-if="surveyStore.loading">Setting things up...</p>
       <div v-else>
         <div v-for="question in surveyStore.currentSurvey.question" :key="question.id" class="flex justify-center">
-          <div v-if="surveyStore.missingAnswers.length > 0" class="w-1/12 flex justify-center items-center">
-            <exclamationMark v-if="surveyStore.missingAnswers.includes(question.id)" class="text-red-500 h-8">
-            </exclamationMark>
-          </div>
           <div class="w-11/12">
-            <booleanComponent class="mb-2" v-if="question.questionType === 'BOOLEAN'" :question="question">
+            <booleanComponent class="mb-2" v-if="question.questionType === 'BOOLEAN'" :question="question"
+              :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
             </booleanComponent>
-            <generalComponent class="mb-6" v-else-if="question.questionType === 'GENERAL'" :question="question">
+            <generalComponent class="mb-6" v-else-if="question.questionType === 'GENERAL'" :question="question"
+              :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
             </generalComponent>
-            <dropdownComponent v-else-if="question.questionType === 'DROPDOWN'" :question="question" />
-            <checkboxComponent
-              v-else
-              class="mb-6"
-              :question="question"
-              :choices="getChoices(question)"
+            <dropdownComponent v-else-if="question.questionType === 'DROPDOWN'" :question="question"
+              :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn" />
+            <checkboxComponent v-else class="mb-6" :question="question" :choices="getChoices(question)"
               :color="'DEE9C8'"
-            >
+              :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
             </checkboxComponent>
           </div>
         </div>
 
         <div class="my-6">
           <p class="text-lg md:text-xl xl:text-3xl my-4">Student's order of priority:</p>
-          <surveyDraggable
-            :courses="surveyStore.currentResponse[indexAll].answer.preference"
-            :index="indexAll"
-            :numbered="true"
-            :key="x"
-            :color="'DEE9C8'"
-          >
+          <surveyDraggable :courses="surveyStore.currentResponse[indexAll].answer.preference" :index="indexAll"
+            :numbered="true" :key="x" :color="'DEE9C8'">
           </surveyDraggable>
         </div>
         <div class="mt-14">
           <p class="text-lg md:text-xl xl:text-3xl">Note from the student:</p>
-          <input
-            disabled
+          <input disabled
             class="block py-2 px-3 mt-3 w-full md:w-3/5 text-base bg-transparent rounded-md border border-solid border-zinc-400 focus:outline-none focus:ring-0 focus:border-blue-400 disabled:bg-gray-100"
-            type="text"
-            v-model="surveyStore.currentResponse[indexNoteGuidance].answer"
-          />
+            type="text" v-model="surveyStore.currentResponse[indexNoteGuidance].answer" />
         </div>
         <div class="my-10">
           <p class="text-lg xl:leading-10 md:text-xl xl:text-3xl">Final counselor notes:</p>
           <input
             class="block py-2 px-3 mt-3 w-full md:w-3/5 text-base bg-transparent rounded-md border border-solid border-zinc-400 focus:outline-none focus:ring-0 focus:border-blue-400"
-            type="text"
-            v-model="surveyStore.currentResponse[indexGuidanceFinalNote].answer"
-          />
+            type="text" v-model="surveyStore.currentResponse[indexGuidanceFinalNote].answer" />
         </div>
       </div>
 
       <div class="flex justify-center mb-10 flex-col items-center">
         <p v-if="surveyStore.missingAnswers.length > 0" class="text-red-500 mb-4 text-center">
-          Please fill in all questions before submitting.
+          Please answer all required questions before submitting.
         </p>
         <p v-else class="mb-4 text-center">
           After finalizing this survey, the student will no longer be able to edit their survey
         </p>
-        <button
-          @click="submit()"
-          class="bg-[#DEE9C8] shadow-[2px_3px_2px_rgba(0,0,0,0.25)] w-36 h-12 text-2xl font-bold text-[#37394F]"
-        >
+        <button @click="submit()"
+          class="bg-[#DEE9C8] shadow-[2px_3px_2px_rgba(0,0,0,0.25)] w-36 h-12 text-2xl font-bold text-[#37394F]">
           Finalize
         </button>
       </div>
@@ -91,7 +74,6 @@ import generalComponent from "../components/SurveyPageComponents/Reusables/Surve
 import checkboxComponent from "../components/SurveyPageComponents/Reusables/SurveyCheckbox.vue";
 import dropdownComponent from "../components/SurveyPageComponents/Reusables/SurveyDropdown.vue";
 import surveyDraggable from "../components/SurveyPageComponents/Reusables/SurveyDraggable.vue";
-import exclamationMark from "../components/icons/ExclamationMark.vue";
 import ScrollPage from "../components/SurveyPageComponents/Reusables/ScrollPage.vue";
 import { surveyQuestion, studentGuidance } from "../types/interface";
 import { useRouter, useRoute, onBeforeRouteLeave } from "vue-router";
@@ -120,6 +102,7 @@ onMounted(async () => {
 });
 
 surveyStore.missingAnswers = [];
+surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
 
 const x: Ref<number> = ref(0);
 
@@ -132,14 +115,21 @@ const getChoices = (question: surveyQuestion) => {
   return classes.filter((x) => x.subject === question.questionType);
 };
 
+
+const shouldWarn = ref(false);
+
 const submit = async () => {
-  await surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
-  if (surveyStore.missingAnswers.length === 0) {
-    if (userStore.userType === "student") {
-      router.push("/student/dashboard");
-    } else if (userStore.userType === "guidance") {
-      router.push("/guidance/studentlist");
-    }
+  if (surveyStore.missingAnswers.length > 0) {
+    alert("Please answer all required questions before finalizing.");
+    surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
+    shouldWarn.value = true;
+    return;
+  }
+  if (userStore.userType === "student") {
+    await surveyStore.saveSurvey();
+    router.push("/student/dashboard");
+  } else if (userStore.userType === "guidance") {
+    router.push("/guidance/studentlist");
   }
 };
 
