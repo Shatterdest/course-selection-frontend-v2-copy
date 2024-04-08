@@ -18,15 +18,9 @@
                 @mouseover="tooltip = true"
                 @mouseout="tooltip = false"
               />
-              <div
-                v-show="tooltip"
-                class="absolute h-auto w-auto bg-white border-primary-g border p-2"
-              >
+              <div v-show="tooltip" class="absolute h-auto w-auto bg-white border-primary-g border p-2">
                 <div v-for="flag in flags" class="flex flex-row">
-                  <div
-                    class="m-1 rounded-full h-5 w-5"
-                    :class="`${flag.color}`"
-                  ></div>
+                  <div class="m-1 rounded-full h-5 w-5" :class="`${flag.color}`"></div>
                   <p class="m-1">= {{ flag.title }}</p>
                 </div>
               </div>
@@ -35,11 +29,7 @@
         </tr>
       </thead>
 
-      <tbody
-        v-for="student in newStudents"
-        :key="student.email"
-        class="border-2 border-black"
-      >
+      <tbody v-for="student in newStudents" :key="student.email" class="border-2 border-black">
         <AddFlag
           v-if="showFlagModal === student.email"
           @exit="toggleFlagModal('')"
@@ -69,36 +59,18 @@
             {{ student.email ? student.email + "@nycstudents.net" : "&nbsp;" }}
           </td>
           <td class="p-4" v-if="student.status === 'NOT STARTED'">
-            <p
-              class="text-[#461616] bg-[#EA9F9F] w-[8rem] font-semibold text-center p-1 rounded-2xl"
-            >
-              Not Started
-            </p>
+            <p class="text-[#461616] bg-[#EA9F9F] w-[8rem] font-semibold text-center p-1 rounded-2xl">Not Started</p>
           </td>
           <td class="p-4" v-else-if="student.status === 'INCOMPLETE'">
-            <p
-              class="text-[#322911] bg-[#F9D477] w-[8rem] font-semibold text-center p-1 rounded-2xl"
-            >
-              In Progress
-            </p>
+            <p class="text-[#322911] bg-[#F9D477] w-[8rem] font-semibold text-center p-1 rounded-2xl">In Progress</p>
           </td>
           <td class="p-4" v-else-if="student.status === 'COMPLETE'">
-            <p
-              class="text-[#174616] bg-[#A8D480] w-[8rem] font-semibold text-center p-1 rounded-2xl"
-            >
-              Completed
-            </p>
+            <p class="text-[#174616] bg-[#A8D480] w-[8rem] font-semibold text-center p-1 rounded-2xl">Completed</p>
           </td>
           <td class="p-4" v-else-if="student.status === 'FINALIZED'">
-            <p
-              class="text-[#311638] bg-[#D1A4DE] w-[8rem] font-semibold text-center p-1 rounded-2xl"
-            >
-              Finalized
-            </p>
+            <p class="text-[#311638] bg-[#D1A4DE] w-[8rem] font-semibold text-center p-1 rounded-2xl">Finalized</p>
           </td>
-          <td @click="viewSurvey(student)" class="p-4 hover:cursor-pointer">
-            View Survey
-          </td>
+          <td @click="viewSurvey(student)" class="p-4 hover:cursor-pointer">View Survey</td>
           <td class="p-4 flex flex-row parent items-center">
             <div v-for="flag in flags" :key="flag.flag">
               <div>
@@ -111,15 +83,9 @@
                 ></div>
               </div>
             </div>
-            <PlusIcon
-              @click="toggleFlagModal(student.email)"
-              class="w-3 m-1 hidden child hover:cursor-pointer"
-            >
+            <PlusIcon @click="toggleFlagModal(student.email)" class="w-3 m-1 hidden child hover:cursor-pointer">
             </PlusIcon>
-            <MinusSign
-              @click="toggleDeleteFlag(student.email)"
-              class="w-3 m-1 hidden child hover:cursor-pointer"
-            >
+            <MinusSign @click="toggleDeleteFlag(student.email)" class="w-3 m-1 hidden child hover:cursor-pointer">
             </MinusSign>
           </td>
         </tr>
@@ -186,21 +152,22 @@ const toggleDeleteFlag = (student: string) => {
 };
 
 function titleCaseName(name: string): string {
-  const titleCaseWord = (word: string): string => {
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-  };
-  const [lastName, firstName] = name.split(",", 2);
-  const titleCasedLastName = lastName.split(" ").map(titleCaseWord).join(" ");
-  const titleCasedFirstName = firstName.split(" ").map(titleCaseWord).join(" ");
-  return `${titleCasedLastName}, ${titleCasedFirstName}`;
+  return name
+    .split(",")
+    .map((chunk) =>
+      chunk
+        .split(" ")
+        .map((part) => part.trim().toLowerCase())
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ")
+    )
+    .join(", ");
 }
 
 async function viewSurvey(student: studentGuidance) {
   try {
     await surveyStore.fetchSurvey(student.email);
-    await router.push(
-      `/guidance/survey/${student.email.replace("@nycstudents.net", "")}`
-    );
+    await router.push(`/guidance/survey/${student.email.replace("@nycstudents.net", "")}`);
   } catch (error) {
     console.error("Error fetching survey data:", error);
   }
