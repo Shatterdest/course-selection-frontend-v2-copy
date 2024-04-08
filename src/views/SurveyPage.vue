@@ -9,23 +9,19 @@
       </div>
       <div class="h-5/6 flex items-center">
         <generalComponent v-if="currentQuestion.questionType === 'GENERAL'" :question="currentQuestion"
-          :key="currentQuestion.id + '-general'"
-          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+          :key="currentQuestion.id + '-general'">
         </generalComponent>
 
         <booleanComponent v-else-if="currentQuestion.questionType === 'BOOLEAN'" :question="currentQuestion"
-          :key="currentQuestion.id + '-boolean'"
-          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+          :key="currentQuestion.id + '-boolean'">
         </booleanComponent>
 
         <dropdownComponent v-else-if="currentQuestion.questionType === 'DROPDOWN'" :question="currentQuestion"
-          :key="currentQuestion.question + '-dropdown'"
-          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+          :key="currentQuestion.question + '-dropdown'">
         </dropdownComponent>
 
         <checkboxComponent v-else :question="currentQuestion" :choices="getChoices()"
-          :key="currentQuestion.question + '-checkbox'" :color="'D6EEFF'"
-          :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn">
+          :key="currentQuestion.question + '-checkbox'" :color="'D6EEFF'">
         </checkboxComponent>
       </div>
     </div>
