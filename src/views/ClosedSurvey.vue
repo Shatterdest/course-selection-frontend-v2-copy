@@ -12,8 +12,8 @@
       </div>
       <div class="my-6">
         <p class="text-lg xl:leading-10 md:text-xl xl:text-3xl my-4">Your final class priority:</p>
-        <!-- <closedFinalRank :courses="(surveyStore.currentResponse[indexAll] as allCoursesAnswer).answer.preference">
-        </closedFinalRank> -->
+        <closedFinalRank :courses="(surveyStore.currentResponse[indexAll] as allCoursesAnswer).answer.preference">
+        </closedFinalRank>
       </div>
       <div class="mt-14">
         <p class="text-lg xl:leading-10 md:text-xl xl:text-3xl">Final note to your guidance counselor:</p>
@@ -49,6 +49,7 @@ surveyStore.fetchSurvey(
 
 console.log("currentResponse", surveyStore.currentResponse)
 console.log("currentAnsweredSurvey", surveyStore.currentAnsweredSurvey)
+console.log("currentSurvey", surveyStore.currentSurvey)
 const indexAll = surveyStore.currentResponse.findIndex((x) => x.id === 'allChosenCourses');
 const indexNote = surveyStore.currentResponse.findIndex((x) => x.id === 'noteToGuidance');
 const x: Ref<number> = ref(0)

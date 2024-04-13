@@ -9,9 +9,9 @@
             <strong> {{choice.rank + 1}}. </strong> {{choice.name}}
           </p>
           </div>
-          <div v-else>
-            <p>You have no chosen classes.</p>
-          </div>
+          <p v-else class="mt-2 mb-2 text-base md:text-lg xl:text-2xl">
+            You have no classes chosen.
+          </p>
         </div>
           </fieldset>
         </div>

@@ -5,7 +5,7 @@
           <fieldset class="flex items-center justify-start w-full">
             <legend class="text-lg xl:leading-10 md:text-xl xl:text-3xl overflow-visible"> Ranked {{ question.question.replace("Select the", " ").replace("course(s) you are interested in:", " ") }} course(s)</legend> 
         <div class="block py-2 px-3 mt-3 w-full md:w-3/5 text-base md:text-lg xl:text-2xl bg-transparent rounded-md border border-solid border-zinc-400 focus:outline-none focus:ring-0 focus:border-blue-400">
-          <div v-if="(surveyStore.currentResponse[index] as surveyAnswer).answer.preference != undefined">
+          <div v-if="(surveyStore.currentResponse[index] as surveyAnswer).answer.preference.length != 0">
             <p v-for="choice in (surveyStore.currentResponse[index] as surveyAnswer).answer.preference" :key="choice.rank" class="mt-2 mb-2 text-base md:text-lg xl:text-2xl">
             <strong> {{choice.rank + 1}}. </strong> {{choice.name}}
           </p>
