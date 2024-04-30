@@ -108,9 +108,9 @@ const getChoices = (question: surveyQuestion) => {
 const shouldWarn = ref(false);
 
 const submit = async () => {
+  surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
   if (surveyStore.missingAnswers.length > 0) {
     alert("Please answer all required questions before submitting.");
-    surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
     shouldWarn.value = true;
     return;
   }
