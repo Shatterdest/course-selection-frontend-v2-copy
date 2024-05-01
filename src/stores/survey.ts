@@ -35,7 +35,7 @@ export const useSurveyStore = defineStore("survey", {
               if (!response) r = true;
               break;
             case "DROPDOWN":
-              if (!response) r = true;
+              if (response === null) r = true;
               break;
             case undefined:
               // final note to guidance counselor has no questionType nor status

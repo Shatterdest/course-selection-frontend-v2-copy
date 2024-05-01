@@ -202,7 +202,12 @@ async function setSession() {
 
     userStore.savePersistentSession();
   } else {
-    throw new Error("Unable to refresh token");
+    if (res.status === 401) {
+      console.log("Refresh token expired");
+      router.push("/");
+    } else {
+      throw new Error("Unable to refresh token");
+    }
   }
 
   userStore.isLoggedIn = true;

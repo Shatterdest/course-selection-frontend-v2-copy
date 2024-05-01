@@ -108,9 +108,9 @@ const getChoices = (question: surveyQuestion) => {
 const shouldWarn = ref(false);
 
 const submit = async () => {
+  surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
   if (surveyStore.missingAnswers.length > 0) {
     alert("Please answer all required questions before submitting.");
-    surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
     shouldWarn.value = true;
     return;
   }
@@ -149,7 +149,6 @@ const reminder = (e: Event) => {
 watch(
   () => surveyStore.currentResponse,
   (newResponse, oldResponse) => {
-    surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
     if (
       //@ts-ignore
       JSON.stringify(newResponse) === surveyStore.currentAnsweredSurvey.answers
@@ -165,7 +164,6 @@ watch(
 watch(
   () => surveyStore.currentAnsweredSurvey.answers,
   (newResponse, oldResponse) => {
-    surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
     //@ts-ignore
     if (newResponse === JSON.stringify(surveyStore.currentResponse)) {
       window.removeEventListener("beforeunload", reminder);
