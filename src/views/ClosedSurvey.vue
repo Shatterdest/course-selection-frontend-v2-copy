@@ -25,6 +25,7 @@
       </div>
     </div>
   </section>
+  <ScrollPage :guidance="false" />
 </template>
 
 <script setup lang="ts">
@@ -34,7 +35,8 @@ import surveyGeneral from '../components/SurveyPageComponents/Reusables/SurveyGe
 import SurveyDropdown from '../components/SurveyPageComponents/Reusables/SurveyDropdown.vue';
 import closedRank from '../components/SurveyPageComponents/Reusables/ClosedSurvey/closedRank.vue';
 import closedFinalRank from '../components/SurveyPageComponents/Reusables/ClosedSurvey/closedFinalRank.vue';
-import { surveyQuestion, surveyAnswer, allCoursesAnswer } from '../types/interface';
+import ScrollPage from '../components/SurveyPageComponents/Reusables/ScrollPage.vue';
+import { surveyQuestion, allCoursesAnswer } from '../types/interface';
 import { ref, Ref } from 'vue';
 import { useUserStore } from '../stores/user';
 
@@ -47,9 +49,6 @@ surveyStore.fetchSurvey(
   userStore.email,
 );
 
-console.log("currentResponse", surveyStore.currentResponse)
-console.log("currentAnsweredSurvey", surveyStore.currentAnsweredSurvey)
-console.log("currentSurvey", surveyStore.currentSurvey)
 const indexAll = surveyStore.currentResponse.findIndex((x) => x.id === 'allChosenCourses');
 const indexNote = surveyStore.currentResponse.findIndex((x) => x.id === 'noteToGuidance');
 const x: Ref<number> = ref(0)

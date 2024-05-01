@@ -30,13 +30,11 @@
       </div>
     </div>
   </section>
-  <ScrollPage :guidance="false" />
 </template>
 
 <script setup lang="ts">
 import { useSurveyStore } from "../../../../stores/survey";
 import { PropType } from "vue";
-import ScrollPage from "../ScrollPage.vue";
 import {
   surveyQuestion,
   surveyAnswer,
