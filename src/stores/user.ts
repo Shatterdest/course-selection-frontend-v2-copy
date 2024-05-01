@@ -99,7 +99,7 @@ export const useUserStore = defineStore("user", {
           .then(async (data) => {
             const surveyStore = useSurveyStore();
 
-            if (data.dueDate < new Date() || data.status === "FINALIZED") {
+            if (data.dueDate < (new Date().toISOString()) || data.status === "FINALIZED") {
               surveyStore.open = false;
             }
             this.studentSurveyPreview = data;

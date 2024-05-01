@@ -6,11 +6,12 @@
         </surveyBoolean>
         <surveyGeneral class="mb-6" v-else-if="question.questionType === 'GENERAL'" :question="question"
           :isDisabled="true"></surveyGeneral>
+        <surveyDropdown class="mb-2" v-else-if="question.questionType === 'DROPDOWN'" :question="question"
+          :isDisabled="true" />
         <closedRank v-else class="mb-6" :question="question" :choices="getChoices(question)"></closedRank>
       </div>
       <div class="my-6">
         <p class="text-lg xl:leading-10 md:text-xl xl:text-3xl my-4">Your final class priority:</p>
-        <!-- Have to change what this says. surveyCheckbox probably also needs to be changed-->
         <closedFinalRank :courses="(surveyStore.currentResponse[indexAll] as allCoursesAnswer).answer.preference">
         </closedFinalRank>
       </div>
@@ -28,8 +29,9 @@
 
 <script setup lang="ts">
 import { useSurveyStore } from '../stores/survey';
-import surveyBoolean from '../components/SurveyPageComponents/Reusables/SurveyBoolean.vue'
-import surveyGeneral from '../components/SurveyPageComponents/Reusables/SurveyGeneral.vue'
+import surveyBoolean from '../components/SurveyPageComponents/Reusables/SurveyBoolean.vue';
+import surveyGeneral from '../components/SurveyPageComponents/Reusables/SurveyGeneral.vue';
+import SurveyDropdown from '../components/SurveyPageComponents/Reusables/SurveyDropdown.vue';
 import closedRank from '../components/SurveyPageComponents/Reusables/ClosedSurvey/closedRank.vue';
 import closedFinalRank from '../components/SurveyPageComponents/Reusables/ClosedSurvey/closedFinalRank.vue';
 import { surveyQuestion, surveyAnswer, allCoursesAnswer } from '../types/interface';
@@ -45,6 +47,9 @@ surveyStore.fetchSurvey(
   userStore.email,
 );
 
+console.log("currentResponse", surveyStore.currentResponse)
+console.log("currentAnsweredSurvey", surveyStore.currentAnsweredSurvey)
+console.log("currentSurvey", surveyStore.currentSurvey)
 const indexAll = surveyStore.currentResponse.findIndex((x) => x.id === 'allChosenCourses');
 const indexNote = surveyStore.currentResponse.findIndex((x) => x.id === 'noteToGuidance');
 const x: Ref<number> = ref(0)
