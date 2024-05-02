@@ -86,20 +86,17 @@ export const useSurveyStore = defineStore("survey", {
         const formattedResponses = JSON.parse(surveyData.answeredSurvey.answers);
         this.currentResponse = formattedResponses;
       }
-      console.log(this.currentSurvey)
-      
+
       //remove questions with empty choices except for "GENERAL", "BOOLEAN", "DROPDOWN", and "CHECKBOX" types
       this.currentSurvey.question = this.currentSurvey.question.filter(question => {
         if (["GENERAL", "BOOLEAN", "DROPDOWN", "CHECKBOX"].includes(question.questionType)) {
           return true; //keep the question for these question types
         } else {
           const choices = this.studentCourses.coursesAvailable.filter(course => course.subject === question.questionType);
-          console.log(choices)
           if (choices.length === 0) {
-            console.log(`Removed "${question.question}"`);
             return false; //filter out the question
           }
-          return true; // Keep the question
+          return true; //keep question
         }
       });
       console.log("Fetched and set student survey data.");

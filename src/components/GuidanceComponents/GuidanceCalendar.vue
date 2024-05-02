@@ -138,7 +138,6 @@ onMounted(async () => {
 
 
 const toggleDetails = (meeting: studentMeetings) => {
-  console.log(meeting)
   meetingDetails.name = meeting.name;
   meetingDetails.meetingDate = meeting.meetingDate;
   meetingDetails.meetingTime = meeting.meetingTime;
@@ -161,7 +160,6 @@ const toggleEvent = (date: any) => {
     month = 0
     year = todaysYear+1
   }
-  // console.log(month)
   createEventDate.value = `${year}-${(month + 1).toString().padStart(2, '0')}-${(date.todaysDate).toString().padStart(2, '0')}`
   showEvent.value = !showEvent.value;
 };

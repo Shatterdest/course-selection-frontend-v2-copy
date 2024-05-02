@@ -178,7 +178,6 @@ async function setSession() {
   const userStore = useUserStore();
   const account_type: account_type = session.account_type;
 
-  // console.log(session);
   Object.assign(userStore, {...session});
   
   const res = await fetch(import.meta.env.VITE_URL + "/auth/token/refresh/", {
@@ -190,7 +189,6 @@ async function setSession() {
     body: JSON.stringify({ refresh: userStore.refresh_token }),
 
   });
-  console.log(JSON.stringify({ refresh: userStore.refresh_token }))
 
   if (res.ok) {
     const data = await res.json();
