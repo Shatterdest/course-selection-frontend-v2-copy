@@ -62,7 +62,7 @@ export const useSurveyStore = defineStore("survey", {
     async fetchSurvey(email: string = "") {
       const userStore = useUserStore();
       const url = userStore.userType === "student" ? "/student/survey" : `/guidance/survey/${email}`;
-
+    
       this.loading = true;
       const res = await fetch(import.meta.env.VITE_URL + url, {
         method: "GET",
@@ -72,29 +72,39 @@ export const useSurveyStore = defineStore("survey", {
         },
       });
       const surveyData: studentSurveyData = await res.json();
-      // console.log("Survey Data:", surveyData);
+      
       this.currentSurvey = surveyData.survey;
       this.currentAnsweredSurvey = surveyData.answeredSurvey;
-
       this.studentCourses.coursesAvailable = surveyData.coursesAvailable;
       this.studentCourses.coursesTaken = surveyData.coursesTaken;
-
       this.name = surveyData.name;
-
+    
       const surveyAnswers = surveyData.answeredSurvey.answers;
       if (surveyAnswers.length === 0) {
-        // this.currentResponse = [];
         this.currentResponse = surveyData.survey.question;
       } else {
-        // resolve type errors here
         const formattedResponses = JSON.parse(surveyData.answeredSurvey.answers);
         this.currentResponse = formattedResponses;
       }
+      console.log(this.currentSurvey)
+      
+      //remove questions with empty choices except for "GENERAL", "BOOLEAN", "DROPDOWN", and "CHECKBOX" types
+      this.currentSurvey.question = this.currentSurvey.question.filter(question => {
+        if (["GENERAL", "BOOLEAN", "DROPDOWN", "CHECKBOX"].includes(question.questionType)) {
+          return true; //keep the question for these question types
+        } else {
+          const choices = this.studentCourses.coursesAvailable.filter(course => course.subject === question.questionType);
+          console.log(choices)
+          if (choices.length === 0) {
+            console.log(`Removed "${question.question}"`);
+            return false; //filter out the question
+          }
+          return true; // Keep the question
+        }
+      });
       console.log("Fetched and set student survey data.");
-      // console.log("Current Response:", this.currentResponse);
-      // console.log("Answered Survey:", this.currentAnsweredSurvey);
       this.loading = false;
-    },
+    },       
     async postSurvey(status: "INCOMPLETE" | "COMPLETE" | "FINALIZED") {
       const userStore = useUserStore();
       const url =
