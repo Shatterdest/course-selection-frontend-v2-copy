@@ -3,7 +3,7 @@
     <div class="lg:w-2/3 w-11/12">
       <div
         v-for="question in surveyStore.currentSurvey.question"
-        :key="question.question"
+        :key="question.id"
         class="flex justify-center mb-8"
       >
         <div class="flex flex-col w-11/12">

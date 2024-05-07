@@ -187,7 +187,7 @@ function toggleInterest(interested: boolean, course: course) {
 
     allCourses.answer.preference.sort((a, b) => a.rank - b.rank);
 
-    const classIndex = currentQuestionAnswer.preference.findIndex(
+    const classIndex = allCourses.answer.preference.findIndex(
       (x: preferences) => x.name === referencedClass
     );
     currentQuestionAnswer.preference.splice(classIndex, 1);
