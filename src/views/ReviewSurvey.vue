@@ -111,6 +111,7 @@ const submit = async () => {
   surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
   if (surveyStore.missingAnswers.length > 0) {
     alert("Please answer all required questions before submitting.");
+    console.log(surveyStore.missingAnswers)
     shouldWarn.value = true;
     return;
   }

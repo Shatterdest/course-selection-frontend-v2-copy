@@ -25,44 +25,46 @@ export const useSurveyStore = defineStore("survey", {
   actions: {
     async checkSurveyAnswers(answers: Array<surveyAnswer | surveyStringAnswer>) {
       answers.forEach((question: surveyQuestion) => {
-        const isMissingOrNA = (response: surveyStringAnswer | surveyAnswer | undefined) => {
-          let r: boolean = false;
-          switch (question.questionType) {
-            case "GENERAL":
-              if (response.trim().length === 0) r = true;
-              break;
-            case "BOOLEAN":
-              if (!response) r = true;
-              break;
-            case "DROPDOWN":
-              if (response === null) r = true;
-              break;
-            case undefined:
-              // final note to guidance counselor has no questionType nor status
-              r = false;
-              break;
-            default:
-              // for checkbox question type
-              r = question.answer.courses.length === 0;
-              break;
+        if (question.id !== 70 && question.id !== 124) {
+          const isMissingOrNA = (response: surveyStringAnswer | surveyAnswer | undefined) => {
+            let r: boolean = false;
+            switch (question.questionType) {
+              case "GENERAL":
+                if (response.trim().length === 0) r = true;
+                break;
+              case "BOOLEAN":
+                if (!response) r = true;
+                break;
+              case "DROPDOWN":
+                if (response === null) r = true;
+                break;
+              case undefined:
+                // final note to guidance counselor has no questionType nor status
+                r = false;
+                break;
+              default:
+                // for checkbox question type
+                r = question.answer.courses.length === 0;
+                break;
+            }
+            if (question.status === "OPTIONAL") r = false;
+            return r;
+          };
+          if (isMissingOrNA(question.answer)) {
+            if (!this.missingAnswers.includes(question.id)) {
+              this.missingAnswers.push(question.id);
+            }
+          } else {
+            const index = this.missingAnswers.indexOf(question.id);
+            if (index !== -1) this.missingAnswers.splice(index, 1);
           }
-          if (question.status === "OPTIONAL") r = false;
-          return r;
-        };
-        if (isMissingOrNA(question.answer)) {
-          if (!this.missingAnswers.includes(question.id)) {
-            this.missingAnswers.push(question.id);
-          }
-        } else {
-          const index = this.missingAnswers.indexOf(question.id);
-          if (index !== -1) this.missingAnswers.splice(index, 1);
         }
       });
     },
     async fetchSurvey(email: string = "") {
       const userStore = useUserStore();
       const url = userStore.userType === "student" ? "/student/survey" : `/guidance/survey/${email}`;
-    
+
       this.loading = true;
       const res = await fetch(import.meta.env.VITE_URL + url, {
         method: "GET",
@@ -72,13 +74,13 @@ export const useSurveyStore = defineStore("survey", {
         },
       });
       const surveyData: studentSurveyData = await res.json();
-      
+
       this.currentSurvey = surveyData.survey;
       this.currentAnsweredSurvey = surveyData.answeredSurvey;
       this.studentCourses.coursesAvailable = surveyData.coursesAvailable;
       this.studentCourses.coursesTaken = surveyData.coursesTaken;
       this.name = surveyData.name;
-    
+
       const surveyAnswers = surveyData.answeredSurvey.answers;
       if (surveyAnswers.length === 0) {
         this.currentResponse = surveyData.survey.question;
@@ -101,7 +103,7 @@ export const useSurveyStore = defineStore("survey", {
       });
       console.log("Fetched and set student survey data.");
       this.loading = false;
-    },       
+    },
     async postSurvey(status: "INCOMPLETE" | "COMPLETE" | "FINALIZED") {
       const userStore = useUserStore();
       const url =
