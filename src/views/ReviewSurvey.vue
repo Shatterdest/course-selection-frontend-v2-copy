@@ -92,9 +92,11 @@ const router = useRouter();
 surveyStore.missingAnswers = [];
 surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
 
-if (surveyStore.currentAnsweredSurvey.status === "COMPLETE") {
-  surveyStore.fetchSurvey();
-}
+// if (surveyStore.currentAnsweredSurvey.status === "COMPLETE") {
+//   surveyStore.fetchSurvey();
+// }
+
+// surveyStore.fetchSurvey()
 
 const indexAllCourses: number = surveyStore.currentResponse.findIndex((question) => question.id === "allChosenCourses");
 const indexNoteGuidance: number = surveyStore.currentResponse.findIndex((question) => question.id === "noteToGuidance");
@@ -175,10 +177,11 @@ watch(
   { deep: true }
 );
 
+
 watch(
   () => (surveyStore.currentResponse[indexAllCourses] as allCoursesAnswer).answer.preference,
   (newResponse) => {
-    x.value = x.value + 1;
+    x.value =+ 1;
   },
   { deep: true }
 );

@@ -1,31 +1,17 @@
 <template>
   <div class="h-auto select-none flex items-center justify-center w-full">
-    <div
-      v-if="props.courses.length > 0"
-      class="flex flex-col mt-2 text-center text-base md:text-lg xl:text-xl"
-    >
-      <div
-        v-for="course in props.courses"
-        :key="course.rank"
-        :id="course.rank.toString()"
-      >
-        <div
-          v-if="course.name !== undefined"
+    <div v-if="props.courses.length > 0" class="flex flex-col mt-2 text-center text-base md:text-lg xl:text-xl">
+      <div v-for="course in props.courses" :key="course.name" :id="course.rank.toString()">
+        <div v-if="course.name !== undefined"
           class="h-12 mx-2 mb-2.5 xl:h-16 w-full placeholder flex items-center justify-center p-2 rounded-lg shadow-lg text-[#37394F] cursor-grab active:cursor-grabbing font-semibold course"
-          :class="`bg-[#${color}]`"
-          :course-rank="course.rank"
-        >
-          <div
-            class="w-full h-full flex items-center justify-center"
-            :class="`bg-[#${color}]`"
-            draggable="true"
+          :class="`bg-[#${color}]`" :course-rank="x">
+          <div class="w-full h-full flex items-center justify-center" :class="`bg-[#${color}]`" draggable="true"
             @dragover.prevent="(e: DragEvent) => hoverBoxOver(e)"
             @dragstart="(e: DragEvent) => (dragElement = e.target as HTMLElement)"
-            @drop.prevent="(e: MouseEvent | DragEvent ) => hoverBox(e, course.rank)"
+            @drop.prevent="(e: MouseEvent | DragEvent) => hoverBox(e, course.rank)"
             @touchstart.prevent="(e: TouchEvent) => handleTouchStart(e, course.rank)"
             @touchmove.prevent="(e: TouchEvent) => handleTouchMove(e)"
-            @touchend.prevent="(e:TouchEvent) => handleTouchEnd(e)"
-          >
+            @touchend.prevent="(e: TouchEvent) => handleTouchEnd(e)">
             {{ course.name }}
           </div>
         </div>
@@ -35,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType } from "vue";
+import { ref, computed, PropType, watch } from "vue";
 import { useSurveyStore } from "../../../stores/survey";
 import { checkboxAnswer, preferences } from "../../../types/interface";
 
@@ -162,4 +148,18 @@ const handleTouchEnd = (e: TouchEvent) => {
   }
   // dragElement = new HTMLElement;
 };
+
+const x = ref(0) //rerender trigger
+
+//watch for changes in currentResponse; trigger draggable rerender
+surveyStore.currentResponse.forEach((question, questionIndex) => {
+  watch(
+    () => surveyStore.currentResponse[questionIndex],
+    () => {
+      x.value++;
+    },
+    { deep: true }
+  );
+});
+
 </script>
