@@ -135,6 +135,23 @@ export const useSurveyStore = defineStore("survey", {
       await this.checkSurveyAnswers(this.currentResponse);
       // if (this.missingAnswers.length !== 0) return;
       if (userStore.userType === "student") {
+        {
+          await this.postSurvey("INCOMPLETE");
+          userStore.studentSurveyPreview.status = "INCOMPLETE";
+        }
+      } else if (userStore.userType === "guidance") {
+        await this.postSurvey("FINALIZED");
+        userStore.studentSurveyPreview.status = "FINALIZED";
+      }
+      this.loading = false;
+    },
+    async submitSurvey() {
+      this.currentAnsweredSurvey.answers = JSON.stringify(this.currentResponse);
+      const userStore = useUserStore();
+      this.loading = true;
+      await this.checkSurveyAnswers(this.currentResponse);
+      // if (this.missingAnswers.length !== 0) return;
+      if (userStore.userType === "student") {
         if (this.missingAnswers.length === 0) {
           await this.postSurvey("COMPLETE");
           userStore.studentSurveyPreview.status = "COMPLETE";

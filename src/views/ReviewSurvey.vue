@@ -118,7 +118,7 @@ const submit = async () => {
     return;
   }
   if (userStore.userType === "student") {
-    await surveyStore.saveSurvey();
+    await surveyStore.submitSurvey();
     router.push("/student/dashboard");
   } else if (userStore.userType === "guidance") {
     router.push("/guidance/studentlist");
