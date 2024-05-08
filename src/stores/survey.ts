@@ -24,8 +24,10 @@ export const useSurveyStore = defineStore("survey", {
   },
   actions: {
     async checkSurveyAnswers(answers: Array<surveyAnswer | surveyStringAnswer>) {
+      const existingQuestions = this.currentSurvey.question.map(q => q.id);
+    
       answers.forEach((question: surveyQuestion) => {
-        if (question.id !== 70 && question.id !== 124) {
+        if (!existingQuestions.includes(question.id)) return;
           const isMissingOrNA = (response: surveyStringAnswer | surveyAnswer | undefined) => {
             let r: boolean = false;
             switch (question.questionType) {
@@ -50,6 +52,7 @@ export const useSurveyStore = defineStore("survey", {
             if (question.status === "OPTIONAL") r = false;
             return r;
           };
+    
           if (isMissingOrNA(question.answer)) {
             if (!this.missingAnswers.includes(question.id)) {
               this.missingAnswers.push(question.id);
@@ -59,7 +62,7 @@ export const useSurveyStore = defineStore("survey", {
             if (index !== -1) this.missingAnswers.splice(index, 1);
           }
         }
-      });
+      );
     },
     async fetchSurvey(email: string = "") {
       const userStore = useUserStore();
