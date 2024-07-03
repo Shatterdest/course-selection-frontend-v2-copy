@@ -3,51 +3,37 @@
     <div class="flex flex-row items-center justify-center w-5/6">
       <div class="w-1/3 flex flex-row justify-evenly">
         <div v-if="loading">Loading students...</div>
-        <div
-          @click="viewAll = !viewAll"
-          class="h-10 px-4 w-60 mx-10 flex flex-row bg-primary-g text-black justify-evenly font-semibold items-center cursor-pointer shadow-[4px_3px_3px_rgba(0,0,0,0.25)]"
-        >
+        <div @click="viewAll = !viewAll"
+          class="h-10 px-4 w-60 mx-10 flex flex-row bg-primary-g text-black justify-evenly font-semibold items-center cursor-pointer shadow-[4px_3px_3px_rgba(0,0,0,0.25)]">
           <label class="cursor-pointer">View all students</label>
           <input class="ml-2" type="checkbox" v-model="viewAll" />
         </div>
         <Sort class="mr-0" @filter-selected="updateSortOption" />
       </div>
-      <SearchBar
-        class="w-2/3"
-        type="text"
-        v-model="input"
-        placeholder="Search Students..."
-      />
+      <SearchBar class="w-2/3" type="text" v-model="input" placeholder="Search Students..." />
     </div>
-    <StudentTable
-      :viewall="viewAll"
-      :new-students="sortedAndFilteredStudents.slice(x, y)"
-    />
+    <StudentTable :viewall="viewAll" :new-students="sortedAndFilteredStudents.slice(x, y)" />
     <div class="max-w-[80%] overflow-x-auto mt-4 flex flex-row justify-between">
-      <button
-        class="mx-2 bg-[#ebebeb] h-8 w-8 rounded-lg font-bold"
-        @click="previousPage"
-        :disabled="currentPage === 1"
-      >
+      <button v-if="currentChunk > 1" class="mx-2 bg-[#ebebeb] h-8 w-8 rounded-lg font-bold" @click="previousChunk">
+        ❮❮
+      </button>
+      <button class="mx-2 bg-[#ebebeb] h-8 w-8 rounded-lg font-bold" @click="previousPage"
+        :disabled="currentPage === 1">
         ❮
       </button>
-      <button
-        v-for="n in totalPages"
-        @click="updatePagination(n)"
-        :class="{
+      <button v-for="n in visiblePages" @click="updatePagination(n)" :class="{
           'bg-[#cdeeb4] focus:bg-[#cdeeb4]': currentPage === n,
           'bg-[#ebebeb]': currentPage !== n,
-        }"
-        class="h-8 w-8 rounded-lg hover:opacity-75 ease-in-out duration-300 font-bold mx-2"
-      >
+        }" class="h-8 w-8 rounded-lg hover:opacity-75 ease-in-out duration-300 font-bold mx-2">
         {{ n }}
       </button>
-      <button
-        class="mx-2 bg-[#ebebeb] h-8 w-8 rounded-lg font-bold"
-        :disabled="currentPage === totalPages"
-        @click="nextPage"
-      >
+      <button class="mx-2 bg-[#ebebeb] h-8 w-8 rounded-lg font-bold" :disabled="currentPage === totalPages"
+        @click="nextPage">
         ❯
+      </button>
+      <button v-if="currentChunk < totalChunks" class="mx-2 bg-[#ebebeb] h-8 w-8 rounded-lg font-bold"
+        @click="nextChunk">
+        ❯❯
       </button>
     </div>
     <h5 class="mt-4">
@@ -58,6 +44,7 @@
     </h5>
   </div>
 </template>
+
 
 <script setup lang="ts">
 //@ts-nocheck
@@ -83,6 +70,8 @@ const y: Ref<number> = ref(10);
 
 const currentPage: Ref<number> = ref(1);
 const pageCapacity: number = 10;
+const currentChunk: Ref<number> = ref(1);
+const pagesPerChunk: number = 10;
 
 onMounted(async () => {
   userStore.currentlyViewingStudents = await userStore.guidanceStudents;
@@ -261,10 +250,12 @@ const totalPages = computed(() => {
 
 watch(
   [sortedAndFilteredStudents],
+  // adjust pagination after students are filtered and categorized
   (currentValue, previousValue) => {
-    // adjust pagination after students are filtered and categorized
     const displayedStudents = sortedAndFilteredStudents.value;
     userStore.currentlyViewingStudents = displayedStudents;
+    currentChunk.value = 1;
+    updatePagination(1);
   },
   { deep: true }
 );
@@ -300,5 +291,28 @@ function updatePagination(pageNumber: number) {
   y.value = endIndex;
 
   currentPage.value = pageNumber;
+}
+
+const totalChunks = computed(() => {
+  return Math.ceil(totalPages.value / pagesPerChunk);
+});
+
+const visiblePages = computed(() => {
+  const start = (currentChunk.value - 1) * (pagesPerChunk + 1);
+  const end = Math.min(start + pagesPerChunk - 1, totalPages.value);
+  const range = Array.from({ length: end - start + 1 });
+  return range.map((_, i) => start + i);
+});
+
+function nextChunk() {
+  if (currentChunk.value < totalChunks.value) {
+    currentChunk.value += 1;
+  }
+}
+
+function previousChunk() {
+  if (currentChunk.value > 1) {
+    currentChunk.value -= 1;
+  }
 }
 </script>
