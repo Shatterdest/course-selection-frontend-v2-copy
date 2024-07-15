@@ -83,6 +83,7 @@
             </button>
           </RouterLink>
         </div>
+        <p>For bug reports: <a href="https://forms.gle/HL8aZfW7Av3eHdAt6" class="text-blue-500">Click Here</a></p>
         <p
           v-if="
             userStore.studentSurveyPreview.meetingDate != undefined ||
