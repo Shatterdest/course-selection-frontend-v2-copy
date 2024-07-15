@@ -165,6 +165,7 @@ export interface surveyQuestion {
   status: question_status;
   classReferenced: any;
   id: string;
+  options: string[];
 }
 
 export interface surveyAnswer {

@@ -56,7 +56,7 @@ const props = defineProps({
 
 const surveyStore = useSurveyStore();
 const index = ref(0);
-const options = [0, 1, 2, 3, 4];
+const options = props.question.options;
 
 const getQuestionIndex = (question: string): number => {
   return surveyStore.currentResponse.findIndex((entry) => entry.question === question);
@@ -71,6 +71,7 @@ function startQuestion() {
       question: currentQuestion,
       questionType: "DROPDOWN",
       answer: "",
+      options: props.question.options,
     };
     surveyStore.currentResponse.push(newQuestion);
   }
