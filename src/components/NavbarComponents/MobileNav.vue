@@ -69,7 +69,7 @@
       <RouterLink @click="$emit('e')" id="link" to="/"
         ><p class="text-4xl">Home</p></RouterLink
       >
-      <p class="text-4xl" @click="$emit('e')">
+      <p id="link" class="text-4xl" @click="$emit('e')">
         <a
           href="https://siths-catalog.netlify.app/"
           target="_blank"
