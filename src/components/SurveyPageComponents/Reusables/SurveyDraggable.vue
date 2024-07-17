@@ -1,17 +1,24 @@
 <template>
   <div class="h-auto select-none flex items-center justify-center w-full">
-    <div v-if="props.courses.length > 0" class="flex flex-col mt-2 text-center text-base md:text-lg xl:text-xl">
-      <div v-for="course in props.courses" :key="course.name" :id="course.rank.toString()">
-        <div v-if="course.name !== undefined"
+    <div
+      v-if="ref_courses.length > 0"
+      class="flex flex-col mt-2 text-center text-base md:text-lg xl:text-xl"
+      ref="courseBox"
+    >
+      <div v-for="course in ref_courses" :key="course.name">
+        <div
+          v-if="course.name !== undefined"
           class="h-12 mx-2 mb-2.5 xl:h-16 w-full placeholder flex items-center justify-center p-2 rounded-lg shadow-lg text-[#37394F] cursor-grab active:cursor-grabbing font-semibold course"
-          :class="`bg-[#${color}]`" :course-rank="x">
-          <div class="w-full h-full flex items-center justify-center" :class="`bg-[#${color}]`" draggable="true"
+          :class="`bg-[#${color}]`"
+        >
+          <div
+            class="w-full h-full flex items-center justify-center"
+            :class="`bg-[#${color}]`"
+            draggable="true"
             @dragover.prevent="(e: DragEvent) => hoverBoxOver(e)"
             @dragstart="(e: DragEvent) => (dragElement = e.target as HTMLElement)"
             @drop.prevent="(e: MouseEvent | DragEvent) => hoverBox(e, course.rank)"
-            @touchstart.prevent="(e: TouchEvent) => handleTouchStart(e, course.rank)"
-            @touchmove.prevent="(e: TouchEvent) => handleTouchMove(e)"
-            @touchend.prevent="(e: TouchEvent) => handleTouchEnd(e)">
+          >
             {{ course.name }}
           </div>
         </div>
@@ -26,8 +33,7 @@ import { useSurveyStore } from "../../../stores/survey";
 import { checkboxAnswer, preferences } from "../../../types/interface";
 
 const isTouchDevice =
-  "ontouchstart" in window ||
-  (navigator.maxTouchPoints !== undefined && navigator.maxTouchPoints > 0);
+  "ontouchstart" in window || (navigator.maxTouchPoints !== undefined && navigator.maxTouchPoints > 0);
 
 const props = defineProps({
   courses: {
@@ -39,6 +45,7 @@ const props = defineProps({
   color: String,
 });
 
+const courseBox: Ref<HTMLDivElement | undefined> = ref();
 const surveyStore = useSurveyStore();
 let dragElement: HTMLElement;
 
@@ -72,7 +79,18 @@ const hoverBox = function (e: MouseEvent | DragEvent, rank: number) {
 };
 
 function updateRank(rank: number, dragIndex: string) {
-  const startObject = ref_courses.value.findIndex((x) => x.rank === +rank);
+  const children = Array.from(courseBox.value.children);
+  const newRanking = [];
+  children.forEach((el: HTMLElement, index) => {
+    const newCourse = ref_courses.value[ref_courses.value.findIndex((course) => course.name === el.innerText)];
+    newCourse.rank = index + 1;
+    newRanking.push(newCourse);
+  });
+  ref_courses.value = newRanking.sort((a, b) => {
+    return a.rank - b.rank;
+  });
+  console.log(ref_courses.value);
+  /*   const startObject = ref_courses.value.findIndex((x) => x.rank === +rank);
 
   if (+rank > +dragIndex) {
     ref_courses.value.forEach((x, index) => {
@@ -93,10 +111,10 @@ function updateRank(rank: number, dragIndex: string) {
   ref_courses.value.sort((a, b) => a.rank - b.rank);
 
   if (props.index !== undefined) {
-    const currentAnswer = surveyStore.currentResponse[props.index]
-      .answer as checkboxAnswer;
+    const currentAnswer = surveyStore.currentResponse[props.index].answer as checkboxAnswer;
     currentAnswer.preference = ref_courses.value;
-  }
+    console.log(currentAnswer.preference);
+  } */
 }
 
 let touchStartX = 0;
@@ -139,8 +157,7 @@ const handleTouchEnd = (e: TouchEvent) => {
     const targetedCourse = target.closest(".course");
     //takes the current rank of the course and updates accordingly
     if (targetedCourse && dragElement) {
-      const dragIndex: string =
-        targetedCourse.getAttribute("course-rank") ?? "";
+      const dragIndex: string = targetedCourse.getAttribute("course-rank") ?? "";
       const rank = parseInt(dragElement.getAttribute("data-rank") ?? "");
 
       updateRank(rank, dragIndex);
@@ -149,7 +166,7 @@ const handleTouchEnd = (e: TouchEvent) => {
   // dragElement = new HTMLElement;
 };
 
-const x = ref(0) //rerender trigger
+const x = ref(0); //rerender trigger
 
 //watch for changes in currentResponse; trigger draggable rerender
 surveyStore.currentResponse.forEach((question, questionIndex) => {
@@ -161,5 +178,4 @@ surveyStore.currentResponse.forEach((question, questionIndex) => {
     { deep: true }
   );
 });
-
 </script>
