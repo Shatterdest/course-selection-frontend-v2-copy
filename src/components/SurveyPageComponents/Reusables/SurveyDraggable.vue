@@ -76,7 +76,7 @@ function updateRank(rank: number, dragIndex: string) {
 
   if (+rank > +dragIndex) {
     ref_courses.value.forEach((x, index) => {
-      if (x.rank < +rank && x.rank >= +dragIndex) {
+      if (x.rank >= +dragIndex) {
         ref_courses.value[index].rank = ref_courses.value[index].rank + 1;
       }
     });
