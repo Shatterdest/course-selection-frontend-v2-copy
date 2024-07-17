@@ -19,6 +19,7 @@
               <div v-for="choice in choices" :key="choice.name">
                 <label
                   class="text-base sm:text-lg xl:text-xl ml-4 flex flex-wrap flex-column justify-center items-center m-2 w-max gap-2"
+                  :class="{ 'text-gray-400': notInterested }"
                 >
                   <input
                     type="checkbox"
