@@ -5,7 +5,12 @@
       class="flex flex-col mt-2 text-center text-base md:text-lg xl:text-xl"
       ref="courseBox"
     >
-      <div v-for="course in ref_courses" :key="course.name">
+      <div
+        v-for="course in ref_courses.sort((a, b) => {
+          return a.rank - b.rank;
+        })"
+        :key="course.name"
+      >
         <div
           v-if="course.name !== undefined"
           class="h-12 mx-2 mb-2.5 xl:h-16 w-full placeholder flex items-center justify-center p-2 rounded-lg shadow-lg text-[#37394F] cursor-grab active:cursor-grabbing font-semibold course"
@@ -17,7 +22,10 @@
             draggable="true"
             @dragover.prevent="(e: DragEvent) => hoverBoxOver(e)"
             @dragstart="(e: DragEvent) => (dragElement = e.target as HTMLElement)"
-            @drop.prevent="(e: MouseEvent | DragEvent) => hoverBox(e, course.rank)"
+            @drop.prevent="updateRank"
+            @touchstart.prevent="(e: TouchEvent) => handleTouchStart(e, course.rank)"
+            @touchmove.prevent="(e: TouchEvent) => handleTouchMove(e)"
+            @touchend.prevent="(e: TouchEvent) => handleTouchEnd(e)"
           >
             {{ course.name }}
           </div>
@@ -28,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch } from "vue";
+import { ref, type Ref, computed, PropType, watch } from "vue";
 import { useSurveyStore } from "../../../stores/survey";
 import { checkboxAnswer, preferences } from "../../../types/interface";
 
@@ -61,35 +69,40 @@ const hoverBoxOver = function (e: DragEvent) {
   }
 };
 
-const hoverBox = function (e: MouseEvent | DragEvent, rank: number) {
-  const dragParent: HTMLElement | null = dragElement.parentElement;
-  let dragIndex: string = "";
-
-  if (dragParent && dragParent.parentElement) {
-    dragIndex = dragParent.parentElement.id;
-  }
-  const target = e.target as HTMLElement;
-
-  if (target && target.parentElement) {
-    target.parentElement.appendChild(dragElement);
-    dragParent?.appendChild(target);
-  }
-
-  updateRank(rank, dragIndex);
-};
-
-function updateRank(rank: number, dragIndex: string) {
+// look at the order of the DOM itself and steal the order from there
+function updateRank() {
+  if (!courseBox.value) return;
   const children = Array.from(courseBox.value.children);
-  const newRanking = [];
-  children.forEach((el: HTMLElement, index) => {
+  // differing amount of elements. this is not good
+  if (children.length !== props.courses.length) {
+    alert("womp womp");
+    ref_courses.value = props.courses;
+    return;
+  }
+  console.log(children.length, props.courses.length);
+  const newRanking: Array<preferences> = [];
+  // declare index separately because foreach's index will count duped elements
+  let index = 0;
+  children.forEach((el: Element) => {
+    if (!(el instanceof HTMLElement)) return;
+    // user is being a menace to society
+    if (props.courses.findIndex((course) => course.name === el.innerText) === -1) {
+      alert("womp womp");
+      ref_courses.value = props.courses;
+      return;
+    }
     const newCourse = ref_courses.value[ref_courses.value.findIndex((course) => course.name === el.innerText)];
     newCourse.rank = index + 1;
     newRanking.push(newCourse);
+    index++;
   });
-  ref_courses.value = newRanking.sort((a, b) => {
-    return a.rank - b.rank;
-  });
-  console.log(ref_courses.value);
+  ref_courses.value = newRanking;
+
+  if (props.index !== undefined) {
+    const currentAnswer = surveyStore.currentResponse[props.index].answer as checkboxAnswer;
+    currentAnswer.preference = ref_courses.value;
+    console.log(currentAnswer.preference);
+  }
   /*   const startObject = ref_courses.value.findIndex((x) => x.rank === +rank);
 
   if (+rank > +dragIndex) {
@@ -160,22 +173,9 @@ const handleTouchEnd = (e: TouchEvent) => {
       const dragIndex: string = targetedCourse.getAttribute("course-rank") ?? "";
       const rank = parseInt(dragElement.getAttribute("data-rank") ?? "");
 
-      updateRank(rank, dragIndex);
+      updateRank();
     }
   }
   // dragElement = new HTMLElement;
 };
-
-const x = ref(0); //rerender trigger
-
-//watch for changes in currentResponse; trigger draggable rerender
-surveyStore.currentResponse.forEach((question, questionIndex) => {
-  watch(
-    () => surveyStore.currentResponse[questionIndex],
-    () => {
-      x.value++;
-    },
-    { deep: true }
-  );
-});
 </script>
