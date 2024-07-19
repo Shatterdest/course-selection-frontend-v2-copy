@@ -1,11 +1,7 @@
 <template>
   <section class="flex justify-center items-center flex-col">
     <div class="lg:w-2/3 w-11/12">
-      <div
-        v-for="question in surveyStore.currentSurvey.question"
-        :key="question.id"
-        class="flex justify-center mb-8"
-      >
+      <div v-for="question in surveyStore.currentSurvey.question" :key="question.id" class="flex justify-center mb-8">
         <div class="flex flex-col w-11/12">
           <booleanComponent
             v-if="question.questionType === 'BOOLEAN'"
@@ -28,6 +24,8 @@
             :choices="getChoices(question)"
             :color="'D6EEFF'"
             :warn="surveyStore.missingAnswers.filter((answer) => answer === question.id).length > 0 && shouldWarn"
+            @save="y++"
+            :key="x"
           />
         </div>
       </div>
@@ -40,7 +38,8 @@
           :courses="(surveyStore.currentResponse[indexAllCourses] as allCoursesAnswer).answer.preference"
           :index="indexAllCourses"
           :numbered="true"
-          :key="x"
+          :final="true"
+          :key="y"
           :color="'D6EEFF'"
         />
       </div>
@@ -101,6 +100,7 @@ surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
 const indexAllCourses: number = surveyStore.currentResponse.findIndex((question) => question.id === "allChosenCourses");
 const indexNoteGuidance: number = surveyStore.currentResponse.findIndex((question) => question.id === "noteToGuidance");
 const x: Ref<number> = ref(0);
+const y: Ref<number> = ref(0);
 
 const getChoices = (question: surveyQuestion) => {
   const classes = surveyStore.studentCourses.coursesAvailable;
@@ -110,10 +110,10 @@ const getChoices = (question: surveyQuestion) => {
 const shouldWarn = ref(false);
 
 const submit = async () => {
+  console.log(surveyStore.currentResponse);
   surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
   if (surveyStore.missingAnswers.length > 0) {
     alert("Please answer all required questions before submitting.");
-    console.log(surveyStore.missingAnswers)
     shouldWarn.value = true;
     return;
   }
@@ -177,12 +177,10 @@ watch(
   { deep: true }
 );
 
-
 watch(
   () => (surveyStore.currentResponse[indexAllCourses] as allCoursesAnswer).answer.preference,
-  (newResponse) => {
-    x.value =+ 1;
-  },
-  { deep: true }
+  () => {
+    x.value++;
+  }
 );
 </script>

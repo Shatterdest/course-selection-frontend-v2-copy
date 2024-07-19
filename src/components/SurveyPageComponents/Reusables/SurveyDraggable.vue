@@ -1,21 +1,16 @@
 <template>
   <div class="h-auto select-none flex items-center justify-center w-full">
     <div
-      v-if="refCourses.length > 0"
+      v-if="refCourses.length > 0 && !refCourses.map((course) => course.name).includes('Not Interested')"
       class="flex flex-col mt-2 text-center text-base md:text-lg xl:text-xl"
       ref="courseBox"
     >
-      <div
-        v-for="course in refCourses.sort((a, b) => {
-          return a.rank - b.rank;
-        })"
-        :key="course.name"
-      >
+      <div v-for="(course, index) in refCourses" :key="course.name + course.rank">
         <div
           v-if="course.name !== undefined"
           class="h-12 mx-2 mb-2.5 xl:h-16 w-full placeholder flex items-center justify-center p-2 rounded-lg shadow-lg text-[#37394F] cursor-grab active:cursor-grabbing font-semibold course"
           :class="`bg-[#${color}]`"
-          :course-rank="course.rank"
+          :course-rank="localCourses[course.name]"
         >
           <div
             class="w-full h-full flex items-center justify-center"
@@ -23,12 +18,12 @@
             draggable="true"
             @dragstart="(e: DragEvent) => (dragElement = e.target as HTMLElement)"
             @dragover.prevent="(e: DragEvent) => hoverBoxOver(e)"
-            @dragend.prevent="(e: MouseEvent | DragEvent) => hoverBox(e, course.rank)"
-            @touchstart.prevent="(e: TouchEvent) => handleTouchStart(e, course.rank)"
+            @dragend.prevent="(e: MouseEvent | DragEvent) => hoverBox(e, localCourses[course.name])"
+            @touchstart.prevent="(e: TouchEvent) => handleTouchStart(e, localCourses[course.name])"
             @touchmove.prevent="(e: TouchEvent) => handleTouchMove(e)"
             @touchend.prevent="(e: TouchEvent) => handleTouchEnd(e)"
           >
-            {{ course.name }} {{ course.rank }}
+            {{ index + 1 }}. {{ course.name }}
           </div>
         </div>
       </div>
@@ -37,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, computed, PropType, watch } from "vue";
+import { ref, type Ref, PropType, onMounted } from "vue";
 import { useSurveyStore } from "../../../stores/survey";
 import { checkboxAnswer, preferences } from "../../../types/interface";
 
@@ -52,13 +47,31 @@ const props = defineProps({
   numbered: Boolean,
   index: Number,
   color: String,
+  final: Boolean,
+});
+
+const emit = defineEmits(["save"]);
+
+onMounted(() => {
+  emit("save");
+  if (!props.final) save();
 });
 
 const courseBox: Ref<HTMLDivElement | undefined> = ref();
 const surveyStore = useSurveyStore();
 let dragElement: HTMLElement;
 
-const refCourses = ref(props.courses);
+const refCourses = ref(
+  props.courses.sort((a, b) => {
+    return a.rank - b.rank;
+  })
+);
+
+// store local rankings
+const localCourses: { [key: string]: number } = {};
+refCourses.value.forEach((course, index) => {
+  localCourses[course.name] = index;
+});
 
 const hoverBoxOver = function (e: DragEvent) {
   const dragParent: HTMLElement | null = dragElement.parentElement;
@@ -88,23 +101,53 @@ const hoverBox = function (e: MouseEvent | DragEvent, rank: number) {
 };
 
 function updateRank(rank: number, dragIndex: number) {
-  if (rank === dragIndex) return;
+  // dragIndex: element should take this position (LOCAL)
+  // rank: element was at this position (LOCAL)
+  // if (rank === dragIndex) return;
   const dir = rank > dragIndex; // true=up, false=down
-  const course = refCourses.value.splice(rank - 1, 1)[0];
-  course.rank = dragIndex;
+  const course = refCourses.value.splice(rank, 1)[0];
+
+  localCourses[course.name] = dragIndex;
+
   refCourses.value.forEach((course) => {
+    const localRank = localCourses[course.name];
     if (dir) {
-      if (course.rank >= dragIndex && course.rank < rank) course.rank++;
+      // console.log("it's going up now");
+      if (localRank < rank && localRank >= dragIndex) {
+        localCourses[course.name]++;
+        // console.log(course.name, "is moving down with a localrank of", localRank);
+      }
     } else {
-      if (course.rank <= dragIndex && course.rank > rank) course.rank--;
+      // console.log("it's going down now");
+      if (localRank > rank && localRank <= dragIndex) {
+        localCourses[course.name]--;
+        // console.log(course.name, "is moving up with a localrank of", localRank);
+      }
     }
   });
+  // console.log(localCourses);
+
   refCourses.value.splice(dragIndex - 1, 0, course);
 
-  if (props.index !== undefined) {
-    const currentAnswer = surveyStore.currentResponse[props.index].answer as checkboxAnswer;
-    currentAnswer.preference = refCourses.value;
-  }
+  const ranks = refCourses.value
+    .map((course) => course.rank)
+    .sort((a, b) => {
+      return a - b;
+    });
+  // console.log(ranks);
+  refCourses.value
+    .toSorted((a, b) => {
+      return localCourses[a.name] - localCourses[b.name];
+    })
+    .forEach((course, index) => {
+      course.rank = ranks[index];
+    });
+
+  refCourses.value.sort((a, b) => {
+    return a.rank - b.rank;
+  });
+
+  save();
 }
 
 let touchStartX = 0;
@@ -151,11 +194,35 @@ const handleTouchEnd = (e: TouchEvent) => {
     const targetedCourse = target.closest(".course");
     //takes the current rank of the course and updates accordingly
     if (targetedCourse && dragElement) {
-      const rank = parseInt(dragElement.getAttribute("data-rank") ?? ""); //element was at this position
-      const dragIndex = parseInt(targetedCourse.getAttribute("course-rank") ?? ""); //element should take this position
+      const rank = parseInt(dragElement.getAttribute("data-rank") ?? "");
+      const dragIndex = parseInt(targetedCourse.getAttribute("course-rank") ?? "");
       updateRank(rank, dragIndex);
     }
   }
   // dragElement = new HTMLElement;
 };
+
+function save() {
+  if (props.index === undefined) return;
+  if (!props.courses.length) return;
+
+  const currentAnswer = surveyStore.currentResponse[props.index].answer as checkboxAnswer;
+
+  // console.log("saving...");
+  const ranks = props.courses
+    .map((course) => course.rank)
+    .sort((a, b) => {
+      return a - b;
+    });
+  // console.log(ranks);
+  // console.log(localCourses);
+  currentAnswer.preference = refCourses.value.map((course, index) => {
+    course.rank = ranks[localCourses[course.name]];
+    // course.rank = index + 1;
+    return course;
+  });
+
+  emit("save");
+  // console.log(JSON.stringify(surveyStore.currentResponse[props.index].answer));
+}
 </script>
