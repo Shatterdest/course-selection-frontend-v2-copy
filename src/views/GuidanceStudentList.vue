@@ -285,7 +285,7 @@ function previousPage() {
 }
 
 function updatePagination(pageNumber: number) {
-  const startIndex = pageNumber * pageCapacity - pageCapacity;
+  const startIndex = (pageNumber - 1) * pageCapacity + 1;
   const endIndex = pageNumber * pageCapacity;
   x.value = startIndex;
   y.value = endIndex;
@@ -298,11 +298,14 @@ const totalChunks = computed(() => {
 });
 
 const visiblePages = computed(() => {
-  const start = (currentChunk.value - 1) * (pagesPerChunk + 1);
+  const start = (currentChunk.value - 1) * pagesPerChunk + 1;
   const end = Math.min(start + pagesPerChunk - 1, totalPages.value);
   const range = Array.from({ length: end - start + 1 });
-  return range.map((_, i) => start + i);
+  const pages = range.map((_, i) => start + i);
+  console.log('Visible pages:', pages);
+  return pages;
 });
+
 
 function nextChunk() {
   if (currentChunk.value < totalChunks.value) {
