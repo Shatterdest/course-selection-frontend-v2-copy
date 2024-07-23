@@ -79,7 +79,7 @@ import checkboxComponent from "../components/SurveyPageComponents/Reusables/Surv
 import surveyDraggable from "../components/SurveyPageComponents/Reusables/SurveyDraggable.vue";
 import dropdownComponent from "../components/SurveyPageComponents/Reusables/SurveyDropdown.vue";
 import ScrollPage from "../components/SurveyPageComponents/Reusables/ScrollPage.vue";
-import { allCoursesAnswer, surveyQuestion } from "../types/interface";
+import { allCoursesAnswer, checkboxAnswer, surveyQuestion } from "../types/interface";
 import { watch, ref, Ref } from "vue";
 import { useRouter, onBeforeRouteLeave } from "vue-router";
 
@@ -92,15 +92,16 @@ const router = useRouter();
 surveyStore.missingAnswers = [];
 surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
 
-// if (surveyStore.currentAnsweredSurvey.status === "COMPLETE") {
-//   surveyStore.fetchSurvey();
-// }
-
-// surveyStore.fetchSurvey()
-
 const indexAllCourses: number = surveyStore.currentResponse.findIndex((question) => question.id === "allChosenCourses");
 const indexNoteGuidance: number = surveyStore.currentResponse.findIndex((question) => question.id === "noteToGuidance");
 const x: Ref<number> = ref(0);
+
+const ref_courses = ref((surveyStore.currentResponse[indexAllCourses] as allCoursesAnswer).answer.preference);
+
+//watch for changes in the courses prop and update items accordingly
+watch(() => (surveyStore.currentResponse[indexAllCourses] as allCoursesAnswer).answer.preference, (newPreference: Array<any>) => {
+  ref_courses.value = [...newPreference];
+}, { deep: true });
 
 const getChoices = (question: surveyQuestion) => {
   const classes = surveyStore.studentCourses.coursesAvailable;
@@ -113,7 +114,6 @@ const submit = async () => {
   surveyStore.checkSurveyAnswers(surveyStore.currentResponse);
   if (surveyStore.missingAnswers.length > 0) {
     alert("Please answer all required questions before submitting.");
-    console.log(surveyStore.missingAnswers)
     shouldWarn.value = true;
     return;
   }
