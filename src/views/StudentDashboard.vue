@@ -129,10 +129,18 @@ let date: String;
 
 const closeTime = computed(() => {
   if (userStore.studentSurveyPreview.dueDate) {
-    const ISOString = userStore.studentSurveyPreview.dueDate.substring(0, 10).split("-");
-    return dateFormat(ISOString, "shortDate");
+    let ISOString = userStore.studentSurveyPreview.dueDate;
+    if (ISOString.endsWith('Z')) {
+      ISOString = ISOString.slice(0, -1);
+    }
+    console.log("ISOString", ISOString);
+    const date = new Date(ISOString);
+    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    return formattedDate;
   }
 });
+console.log("closeTime", closeTime);
+
 
 if (userStore.studentSurveyPreview.meetingDate != undefined || userStore.studentSurveyPreview.meetingDate != null) {
   const datetime = new Date(userStore.studentSurveyPreview.meetingDate);
