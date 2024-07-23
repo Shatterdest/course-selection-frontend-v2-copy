@@ -116,7 +116,7 @@ import BellIcon from "../components/icons/BellIcon.vue";
 import { useUserStore } from "../stores/user";
 import { useSurveyStore } from "../stores/survey";
 //@ts-ignore
-import dateFormat from "dateformat";
+// import dateFormat from "dateformat";
 import { onMounted, Ref, ref, watch, computed } from "vue";
 
 document.title = "Dashboard | SITHS Course Selection";
@@ -127,17 +127,17 @@ const surveyStore = useSurveyStore();
 let time: String;
 let date: String;
 
-const closeTime = computed(() => {
-  if (userStore.studentSurveyPreview.dueDate) {
-    const ISOString = userStore.studentSurveyPreview.dueDate.substring(0, 10).split("-");
-    return dateFormat(ISOString, "shortDate");
-  }
-});
+// const closeTime = computed(() => {
+//   if (userStore.studentSurveyPreview.dueDate) {
+//     const ISOString = userStore.studentSurveyPreview.dueDate.substring(0, 10).split("-");
+//     return dateFormat(ISOString, "shortDate");
+//   }
+// });
 
 if (userStore.studentSurveyPreview.meetingDate != undefined || userStore.studentSurveyPreview.meetingDate != null) {
   const datetime = new Date(userStore.studentSurveyPreview.meetingDate);
-  date = dateFormat(datetime, "shortDate");
-  time = dateFormat(datetime, "shortTime");
+  // date = dateFormat(datetime, "shortDate");
+  // time = dateFormat(datetime, "shortTime");
 }
 
 function toTitleCase(string: string) {
