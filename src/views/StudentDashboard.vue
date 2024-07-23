@@ -27,13 +27,13 @@
         class="text-lg md:text-xl text-left flex justify-center items-center ml-4 lg:ml-0 lg:justify-start"
       >
         <BellIcon />
-        <h2 v-if="surveyStore.open">Surveys are closing on {{ closeTime }}.</h2>
+        <!-- <h2 v-if="surveyStore.open">Surveys are closing on {{ closeTime }}.</h2>
         <h2 v-else-if="userStore.studentSurveyPreview.status === 'FINALIZED'">
           Your guidance counselor has finalized your survey. If you wish to make changes, please contact them.
         </h2>
         <h2 v-else>
           The due date for completion has passed. Please contact your guidance counselor to request changes.
-        </h2>
+        </h2> -->
       </div>
 
       <!-- survey status -->
@@ -129,18 +129,10 @@ let date: String;
 
 const closeTime = computed(() => {
   if (userStore.studentSurveyPreview.dueDate) {
-    let ISOString = userStore.studentSurveyPreview.dueDate;
-    if (ISOString.endsWith('Z')) {
-      ISOString = ISOString.slice(0, -1);
-    }
-    console.log("ISOString", ISOString);
-    const date = new Date(ISOString);
-    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-    return formattedDate;
+    const ISOString = userStore.studentSurveyPreview.dueDate.substring(0, 10).split("-");
+    return dateFormat(ISOString, "shortDate");
   }
 });
-console.log("closeTime", closeTime);
-
 
 if (userStore.studentSurveyPreview.meetingDate != undefined || userStore.studentSurveyPreview.meetingDate != null) {
   const datetime = new Date(userStore.studentSurveyPreview.meetingDate);
