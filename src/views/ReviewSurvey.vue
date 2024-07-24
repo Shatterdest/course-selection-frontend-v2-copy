@@ -37,7 +37,7 @@
           being your top priority.
         </p>
         <surveyDraggable
-          :courses="(surveyStore.currentResponse[indexAllCourses] as allCoursesAnswer).answer.preference"
+          :courses="ref_courses"
           :index="indexAllCourses"
           :numbered="true"
           :key="x"
