@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { ref, Ref, reactive, onMounted, watchEffect } from "vue";
 import { useUserStore } from "../../stores/user";
+//@ts-ignore
 import { studentMeetings, calendarMeetings, calendarData } from "../../types/interface";
 import UpcomingMeetings from "../GuidanceComponents/UpcomingMeetings.vue";
 import CreateEvent from "./CreateEvent.vue";

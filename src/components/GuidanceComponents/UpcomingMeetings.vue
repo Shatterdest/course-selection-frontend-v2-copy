@@ -29,10 +29,11 @@ const meetingsData: Ref<studentMeetings[]> = ref([]);
 const todaysDate = new Date();
 
 async function updateStudentMeetings() {
+  //@ts-ignore
   meetingsData.value = userStore.guidanceMeetings.map((student: studentMeetings) => ({
     name: student.name,
     meetingDate: new Date(student.meetingDate),
-    meetingTime: (new Date(student.meetingDate).toTimeString()).slice(0, 5),
+    meetingTime: new Date(student.meetingDate).toTimeString().slice(0, 5),
     description: student.description,
     email: student.email,
     grade: student.grade,
