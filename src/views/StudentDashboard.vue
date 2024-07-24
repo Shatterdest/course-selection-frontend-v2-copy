@@ -27,13 +27,13 @@
         class="text-lg md:text-xl text-left flex justify-center items-center ml-4 lg:ml-0 lg:justify-start"
       >
         <BellIcon />
-        <!-- <h2 v-if="surveyStore.open">Surveys are closing on {{ closeTime }}.</h2>
+        <h2 v-if="surveyStore.open">Surveys are closing on {{ closeDate }}.</h2>
         <h2 v-else-if="userStore.studentSurveyPreview.status === 'FINALIZED'">
           Your guidance counselor has finalized your survey. If you wish to make changes, please contact them.
         </h2>
         <h2 v-else>
           The due date for completion has passed. Please contact your guidance counselor to request changes.
-        </h2> -->
+        </h2>
       </div>
 
       <!-- survey status -->
@@ -115,9 +115,7 @@
 import BellIcon from "../components/icons/BellIcon.vue";
 import { useUserStore } from "../stores/user";
 import { useSurveyStore } from "../stores/survey";
-//@ts-ignore
-// import dateFormat from "dateformat";
-import { onMounted, Ref, ref, watch, computed } from "vue";
+import { computed } from "vue";
 
 document.title = "Dashboard | SITHS Course Selection";
 
@@ -127,17 +125,16 @@ const surveyStore = useSurveyStore();
 let time: String;
 let date: String;
 
-// const closeTime = computed(() => {
-//   if (userStore.studentSurveyPreview.dueDate) {
-//     const ISOString = userStore.studentSurveyPreview.dueDate.substring(0, 10).split("-");
-//     return dateFormat(ISOString, "shortDate");
-//   }
-// });
+const closeDate = computed(() => {
+  if (userStore.studentSurveyPreview.dueDate) {
+    const dateString = new Date(userStore.studentSurveyPreview.dueDate).toDateString().slice(4);
+    return dateString;
+  }
+});
 
-if (userStore.studentSurveyPreview.meetingDate != undefined || userStore.studentSurveyPreview.meetingDate != null) {
-  const datetime = new Date(userStore.studentSurveyPreview.meetingDate);
-  // date = dateFormat(datetime, "shortDate");
-  // time = dateFormat(datetime, "shortTime");
+if (userStore.studentSurveyPreview.meetingDate) {
+  date = new Date(userStore.studentSurveyPreview.meetingDate).toDateString().slice(4);
+  time = new Date(userStore.studentSurveyPreview.meetingDate).toTimeString().slice(0, 5);
 }
 
 function toTitleCase(string: string) {

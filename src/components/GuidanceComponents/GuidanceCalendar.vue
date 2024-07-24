@@ -70,8 +70,6 @@ import UpcomingMeetings from "../GuidanceComponents/UpcomingMeetings.vue";
 import CreateEvent from "./CreateEvent.vue";
 import MeetingDetails from "./MeetingDetails.vue";
 import PlusIcon from "../icons/PlusIcon.vue";
-//@ts-ignore
-import dateformat from "dateformat";
 
 const calendarData: calendarData = reactive({
   dateInfo: [],
@@ -203,8 +201,8 @@ const renderCalendar = async () => {
       if (isMeetingDate) {
         const meetingDetails = {
           name: student.name,
-          meetingDate: dateformat(studentMeetingDate, "shortDate"),
-          meetingTime: dateformat(studentMeetingDate, "shortTime"),
+          meetingDate: new Date(studentMeetingDate).toDateString().slice(4),
+          meetingTime: new Date(studentMeetingDate).toTimeString().slice(0, 5),
           description: student.description,
           grade: student.grade,
           email: student.email,

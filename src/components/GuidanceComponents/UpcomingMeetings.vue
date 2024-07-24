@@ -24,9 +24,6 @@
 import { ref, Ref, computed, watch, onMounted } from "vue";
 import { useUserStore } from "../../stores/user";
 import { studentMeetings } from "../../types/interface";
-//@ts-ignore
-import dateformat from "dateformat";
-
 const userStore = useUserStore();
 const meetingsData: Ref<studentMeetings[]> = ref([]);
 const todaysDate = new Date();
@@ -35,7 +32,7 @@ async function updateStudentMeetings() {
   meetingsData.value = userStore.guidanceMeetings.map((student: studentMeetings) => ({
     name: student.name,
     meetingDate: new Date(student.meetingDate),
-    meetingTime: dateformat(new Date(student.meetingDate), "shortTime"),
+    meetingTime: (new Date(student.meetingDate).toTimeString()).slice(0, 5),
     description: student.description,
     email: student.email,
     grade: student.grade,
@@ -48,7 +45,7 @@ const groupedStudentMeetings = computed(() => {
   meetingsData.value
     .filter((meeting) => meeting.meetingDate > todaysDate)
     .forEach((meeting) => {
-      const formattedDate = dateformat(meeting.meetingDate, "longDate");
+      const formattedDate = (new Date(meeting.meetingDate)).toDateString();
       if (!groupedMeetings[formattedDate]) {
         groupedMeetings[formattedDate] = [];
       }

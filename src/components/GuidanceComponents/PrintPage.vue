@@ -21,11 +21,8 @@
       </div>
     </div>
     <div class="item submit ml-4 mb-6 xl:text-2xl transition duration-300 hover:opacity-50 cursor-pointer w-fit">
-      <button
-        class="flex flex-row items-center font-bold text-[1.2rem] bg-[#e5e7be] px-4 py-2 rounded-lg w-fit h-fit"
-        type="submit"
-        @click="printMeetingTicket"
-      >
+      <button class="flex flex-row items-center font-bold text-[1.2rem] bg-[#e5e7be] px-4 py-2 rounded-lg w-fit h-fit"
+        type="submit" @click="printMeetingTicket">
         <PrinterIcon class="mr-3" /> Print
       </button>
     </div>
@@ -37,8 +34,6 @@ import { ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/user";
 import PrinterIcon from "../icons/PrinterIcon.vue";
 import { useRoute } from "vue-router";
-//@ts-ignore
-import dateformat from "dateformat";
 import { studentMeetings } from "../../types/interface";
 
 const route = useRoute();
@@ -89,8 +84,8 @@ async function fetchStudentInfo() {
     if (index > -1) {
       studentName.value = meetingsData[index].name;
       const DateAndTime = meetingsData[index].meetingDate;
-      meetingTime.value = dateformat(DateAndTime, "shortTime");
-      meetingDate.value = dateformat(DateAndTime, "shortDate");
+      meetingTime.value = (new Date(DateAndTime).toTimeString()).slice(0, 5);
+      meetingDate.value = (new Date(DateAndTime).toDateString());
       meetingDescription.value = meetingsData[index].description;
     }
     return meetingsData;
