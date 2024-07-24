@@ -41,7 +41,7 @@
         </button>
       </RouterLink>
     </div>
-    <p class="flex flex-row justify-end w-full pr-10 text-xl font-semibold">
+    <p class="flex flex-row justify-center w-full text-xl font-semibold">
       {{ currentIndex + 1 }}
     </p>
     </div>
