@@ -25,7 +25,8 @@
         </checkboxComponent>
       </div>
     </div>
-    <div class="h-1/6 w-11/12 md:w-4/5 lg:w-3/4 flex justify-between items-start px-4">
+    <div class="h-1/6 w-11/12 md:w-4/5 lg:w-3/4 justify-between items-start px-4 bg-white z-20 flex flex-col">
+      <div class="flex flex-row justify-between w-full">
       <button @click="previousQuestion()" class="bg-[#6A9FD1] text-white w-24 h-10 rounded-md disabled:bg-stone-400"
         :disabled="min">
         Back
@@ -40,9 +41,10 @@
         </button>
       </RouterLink>
     </div>
-    <p class="absolute bottom-8 right-16 text-xl font-semibold">
+    <p class="flex flex-row justify-end w-full pr-20 text-xl font-semibold">
       {{ currentIndex + 1 }}
     </p>
+    </div>
   </div>
 </template>
 
