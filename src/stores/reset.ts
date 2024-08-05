@@ -20,6 +20,5 @@ export function useResetStore() {
   resetStores.all = () => pinia._s.forEach((store) => store.$reset())
 
   sessionStorage.clear()
-  router.push('/')
   return resetStores
 }

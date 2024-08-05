@@ -3,6 +3,7 @@ import NavBar from './components/NavbarComponents/NavBar.vue';
 import { useSurveyStore } from './stores/survey';
 import { useUserStore } from './stores/user';
 import { useResetStore } from './stores/reset';
+import router from './router';
 
 const surveyStore = useSurveyStore()
 const userStore = useUserStore()
@@ -15,6 +16,7 @@ const sessionExpiration = session ? (JSON.parse(session).expire_time) : null;
 
 if(currentTime.getTime() > userStore.expire_time && currentTime > sessionExpiration) {
   resetStore.all()
+  router.push("/")
 }
 </script>
 
