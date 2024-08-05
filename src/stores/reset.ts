@@ -1,5 +1,5 @@
 import { getActivePinia, Pinia, Store } from 'pinia'
-
+import router  from '../router'
 interface ExtendedPinia extends Pinia {
   _s: Map<string, Store>
 }
@@ -20,5 +20,6 @@ export function useResetStore() {
   resetStores.all = () => pinia._s.forEach((store) => store.$reset())
 
   sessionStorage.clear()
+  router.push('/')
   return resetStores
 }
