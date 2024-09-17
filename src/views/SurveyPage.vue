@@ -3,8 +3,14 @@
     <p v-if="surveyStore.loading">Setting things up...</p>
     <div v-else class="w-11/12 md:w-4/5 lg:w-3/4 flex flex-col items-center min-h-[20rem] h-5/6 overflow mt-6">
       <div class="mt-5">
-        <h1 class="text-4xl font-semibold mb-6">
-          {{ surveyStore.currentSurvey.grade }} Year Survey
+        <h1 class="text-4xl font-semibold mb-6" v-if="surveyStore.currentSurvey.grade === 'FRESHMAN'">
+          SOPHOMORE Year Survey
+        </h1>
+        <h1 class="text-4xl font-semibold mb-6" v-if="surveyStore.currentSurvey.grade === 'SOPHOMORE'">
+          JUNIOR Year Survey
+        </h1>
+        <h1 class="text-4xl font-semibold mb-6" v-if="surveyStore.currentSurvey.grade === 'JUNIOR'">
+          SENIOR Year Survey
         </h1>
       </div>
       <div class="h-5/6 flex items-center">
@@ -61,7 +67,6 @@ import { onBeforeRouteLeave } from "vue-router";
 
 document.title = 'Survey | SITHS Course Selection'
 
-const userStore = useUserStore();
 const surveyStore = useSurveyStore();
 
 const currentIndex: Ref<number> = ref(0);
