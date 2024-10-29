@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 document.title = "Home | SITHS Course Selection";
@@ -15,6 +16,27 @@ function toTitleCase(string: string) {
     )
     .join(",");
 }
+
+onMounted(async () => {
+  const { access_token } = useUserStore();
+  try {
+    // GET request for all students
+    const profilesResponse = await fetch(
+      `${import.meta.env.VITE_URL}/guidance/profiles`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    const data = await profilesResponse.json();
+    userStore.guidanceStudents = data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+});
 </script>
 
 <template>
@@ -28,11 +50,14 @@ function toTitleCase(string: string) {
         {{ toTitleCase(`${userStore.first_name} ${userStore.last_name}`) }},
       </h1>
       <h2 class="text-lg lg:text-xl">
-        Welcome to Staten Island Technical High School's Course Selection Guidance platform.
+        Welcome to Staten Island Technical High School's Course Selection
+        Guidance platform.
       </h2>
       <div class="flex justify-start items-center space-x-4">
         <RouterLink to="/guidance/studentlist">
-          <button class="bg-other-g w-48 h-14 rounded-md text-xl font-semibold hover:bg-primary-g">
+          <button
+            class="bg-other-g w-48 h-14 rounded-md text-xl font-semibold hover:bg-primary-g"
+          >
             View Students
           </button>
         </RouterLink>

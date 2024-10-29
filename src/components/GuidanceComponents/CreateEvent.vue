@@ -74,7 +74,6 @@
               {{ titleCaseName(student.name) }}, | {{ student.email }}@nycstudents.net
             </option>
           </datalist>
-
           <input
             class="space rounded-md border border-solid border-zinc-400 h-10 p-2 ml-6 mt-1 w-80"
             placeholder="Select Student From List"
@@ -148,6 +147,8 @@ const show: Ref<boolean> = ref(true);
 onMounted(() => {
   studentList.value = userStore.guidanceStudents;
 });
+
+
 
 //toggle modal
 function toggleEvent() {
