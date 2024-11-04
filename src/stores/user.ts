@@ -45,7 +45,9 @@ export const useUserStore = defineStore("user", {
             .then(async (data) => {
               const guidanceProfiles = await data.json();
               this.studentSurveyPreview = guidanceProfiles;
-              this.guidanceStudents = await guidanceProfiles.filter((student: studentGuidance) => student.ownStudent);
+              this.guidanceStudents = await guidanceProfiles.filter(
+                (student: studentGuidance) => student.ownStudent
+              );
               this.loading = true;
             })
             .then(() => {
@@ -54,29 +56,33 @@ export const useUserStore = defineStore("user", {
             .catch((error) => {
               throw new Error("Error fetching profiles:", error.message);
             });
-          fetch(`${import.meta.env.VITE_URL}/guidance/meetings`, {
+          fetch(`${import.meta.env.VITE_URL}/guidance/meetings/${JSON.stringify({firstName: this.first_name, lastName: this.last_name})}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${this.access_token}`,
             },
           })
             .then(async (data) => {
-              const meetingsData = (await data.json()).map((student: studentMeetings) => ({
-                name: student.name
-                  .split(",")
-                  .map((chunk) =>
-                    chunk
-                      .split(" ")
-                      .map((part) => part.trim().toLowerCase())
-                      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                      .join(" ")
-                  )
-                  .join(","),
-                meetingDate: student.meetingDate,
-                description: student.description,
-                grade: student.grade,
-                email: student.email,
-              }));
+              const meetingsData = (await data.json()).map(
+                (student: studentMeetings) => ({
+                  name: student.name
+                    .split(",")
+                    .map((chunk) =>
+                      chunk
+                        .split(" ")
+                        .map((part) => part.trim().toLowerCase())
+                        .map(
+                          (part) => part.charAt(0).toUpperCase() + part.slice(1)
+                        )
+                        .join(" ")
+                    )
+                    .join(","),
+                  meetingDate: student.meetingDate,
+                  description: student.description,
+                  grade: student.grade,
+                  email: student.email,
+                })
+              );
               this.guidanceMeetings = meetingsData;
             })
             .catch((error) => {
@@ -99,7 +105,10 @@ export const useUserStore = defineStore("user", {
           .then(async (data) => {
             const surveyStore = useSurveyStore();
 
-            if (data.dueDate < (new Date().toISOString()) || data.status === "FINALIZED") {
+            if (
+              data.dueDate < new Date().toISOString() ||
+              data.status === "FINALIZED"
+            ) {
               surveyStore.open = false;
             }
             this.studentSurveyPreview = data;
@@ -185,7 +194,12 @@ export const useUserStore = defineStore("user", {
         alert("Login failed. Please check your credentials.");
       }
     },
-    async changeMeeting(email: string, meetingISO: string, description: string, notify: boolean) {
+    async changeMeeting(
+      email: string,
+      meetingISO: string,
+      description: string,
+      notify: boolean
+    ) {
       try {
         await fetch(`${import.meta.env.VITE_URL}/guidance/updateMeeting/`, {
           method: "POST",
@@ -200,7 +214,9 @@ export const useUserStore = defineStore("user", {
             date: meetingISO,
           }),
         });
-        const meetingExists = this.guidanceMeetings.some((meeting) => meeting.email === email);
+        const meetingExists = this.guidanceMeetings.some(
+          (meeting) => meeting.email === email
+        );
         if (!meetingExists) {
           const student = this.guidanceStudents.find(
             (student: studentGuidance) => student.email === email.split("@")[0]
@@ -237,7 +253,9 @@ export const useUserStore = defineStore("user", {
         }),
       })
         .then(() => {
-          const updatedMeetings = this.guidanceMeetings.filter((meeting) => meeting.email !== email);
+          const updatedMeetings = this.guidanceMeetings.filter(
+            (meeting) => meeting.email !== email
+          );
           this.guidanceMeetings = updatedMeetings;
         })
         .catch((error) => {
@@ -246,24 +264,29 @@ export const useUserStore = defineStore("user", {
     },
     async addFlag(email: string, newFlag: string, viewAll: boolean) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_URL}/guidance/updateFlag/`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            flag: newFlag,
-          }),
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_URL}/guidance/updateFlag/`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${this.access_token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email,
+              flag: newFlag,
+            }),
+          }
+        );
         const data = await res.json();
         if (this.currentlyViewingStudents === null) return;
         const studentIndex = this.currentlyViewingStudents.findIndex(
-          (student: studentPreview) => student.email + "@nycstudents.net" === email
+          (student: studentPreview) =>
+            student.email + "@nycstudents.net" === email
         );
         const previewIndex = this.guidanceStudents.findIndex(
-          (student: studentGuidance) => student.email + "@nycstudents.net" === email
+          (student: studentGuidance) =>
+            student.email + "@nycstudents.net" === email
         );
 
         if (viewAll === true) {
@@ -289,24 +312,29 @@ export const useUserStore = defineStore("user", {
     },
     async deleteFlag(email: string, flagToBeRemoved: string, viewAll: boolean) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_URL}/guidance/updateFlag/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${this.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            flag: flagToBeRemoved,
-          }),
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_URL}/guidance/updateFlag/`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${this.access_token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email,
+              flag: flagToBeRemoved,
+            }),
+          }
+        );
         const data = await res.json();
         if (this.currentlyViewingStudents === null) return;
         const studentIndex = this.currentlyViewingStudents.findIndex(
-          (student: studentPreview) => student.email + "@nycstudents.net" === email
+          (student: studentPreview) =>
+            student.email + "@nycstudents.net" === email
         );
         const previewIndex = this.guidanceStudents.findIndex(
-          (student: studentGuidance) => student.email + "@nycstudents.net" === email
+          (student: studentGuidance) =>
+            student.email + "@nycstudents.net" === email
         );
 
         if (viewAll === true) {

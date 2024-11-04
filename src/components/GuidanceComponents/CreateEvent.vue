@@ -145,8 +145,20 @@ const nameError: Ref<boolean> = ref(false);
 const notify: Ref<boolean> = ref(false);
 const show: Ref<boolean> = ref(true);
 
-onMounted(() => {
-  studentList.value = userStore.guidanceStudents;
+onMounted(async() => {
+  const { access_token } = useUserStore();
+  const userResponse = await fetch(
+      `${import.meta.env.VITE_URL}/guidance/profiles`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+  studentList.value = await userResponse.json()
 });
 
 //toggle modal
