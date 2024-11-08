@@ -56,7 +56,7 @@ export const useUserStore = defineStore("user", {
             .catch((error) => {
               throw new Error("Error fetching profiles:", error.message);
             });
-          fetch(`${import.meta.env.VITE_URL}/guidance/meetings/${JSON.stringify({firstName: this.first_name, lastName: this.last_name})}`, {
+          fetch(`${import.meta.env.VITE_URL}/guidance/meetings/`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${this.access_token}`,
